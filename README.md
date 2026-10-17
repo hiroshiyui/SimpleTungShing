@@ -34,7 +34,7 @@ The app in 台灣漢語 and English: the day's almanac, and the widget and langu
 - **Moon phase**, derived either from the lunar day (初一 as new moon) or by astronomical calculation; you pick the method.
 - **Companion app** for browsing any date in the dataset range, by stepping day by day or picking a date from a calendar. It also shows the ROC year and whether the lunar month is long or short.
 - **English and Taiwanese Mandarin (台灣漢語)** interfaces, following the system language by default; on Android 13+ you can also pick the language in the app. Almanac content stays in Han script (漢文).
-- **Offline and private**: all data is bundled with the app. It requests no permissions and collects nothing.
+- **Offline and private**: all data is bundled with the app. It has no internet permission, asks for no runtime permissions and collects nothing; the only permissions are the standard install-time ones WorkManager uses to update the widget.
 
 - **桌面小工具**：顯示今日國曆日期、星期、農曆日期（含閏月）、歲次干支與生肖、日干支，以及沖煞。小工具會在當地午夜過後、系統時間或時區變更時自動更新；尺寸較小時僅顯示日期資訊。
 - **自訂外觀**：可選擇純色、漸層或玻璃質感背景（Android 12 以上依桌布配色），調整背景透明度、外距、內距與文字對齊，並可顯示或隱藏月相。桌面小工具無法模糊背後的畫面，玻璃質感以半透明漸層與亮邊呈現。
@@ -43,7 +43,7 @@ The app in 台灣漢語 and English: the day's almanac, and the widget and langu
 - **月相**：可選擇依農曆日期（以初一為新月）推估，或以天文公式計算。
 - **隨附程式**：可逐日切換或從日曆選擇日期，瀏覽資料範圍內任一天的農民曆資訊，並另外顯示民國年與農曆大小月。
 - **介面支援英文與台灣漢語**：預設跟隨系統語言，Android 13 以上也可在程式中自行選擇。農民曆內容維持漢文。
-- **離線、保護隱私**：所有資料皆隨程式內建，不需要任何權限，也不收集任何資料。
+- **離線、保護隱私**：所有資料皆隨程式內建，沒有網路權限，不要求任何執行階段權限，也不收集任何資料；僅帶有 WorkManager 更新小工具所需的標準安裝時權限。
 
 ## Data 資料
 

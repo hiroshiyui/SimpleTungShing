@@ -1,0 +1,35 @@
+Hello, it's me, Simple Tung Shing (簡易農民曆)!
+
+I'm a small home-screen widget and app that brings the traditional Tung Shing almanac (農民曆／黃曆／通書) to your phone, in a friendly way for everyone, young and old.
+
+What I show you:
+
+* Today's Gregorian date and weekday, with the ROC year (民國)
+* The lunar date (農曆), including leap months (閏月) and whether the month is long or short
+* The year's sexagenary name (干支) and zodiac animal (生肖)
+* The day's stem-branch (日干支) and its clash and sha direction (沖煞)
+* Solar terms (節氣), such as 立春 and 霜降, on their day
+* Han traditional festivals and religious observances (節日), such as 春節, 清明節, 端午節, 中秋節 and 天后誕
+* The moon phase, worked out from the lunar day or by astronomical calculation, as you prefer
+
+Make the widget your own:
+
+* Solid, gradient or glass-style background, following your wallpaper colors on Android 12 and later
+* Adjustable transparency, margin, padding and text alignment
+* I refresh myself just after midnight, and when the time, time zone or language changes
+
+My interface speaks English and 台灣漢語 (Taiwanese Mandarin). I follow your system language, and on Android 13 and later you can also choose a language in my settings. The almanac content itself stays in Han script (漢文).
+
+Almanac items such as the stem-branch, clash and sha are folk customs and traditions. Please enjoy them as culture, not as predictions.
+
+Private by design:
+
+* I work fully offline from data bundled inside me; I have no internet permission
+* I never ask for runtime permissions and collect nothing about you
+* The only permissions I carry are the standard install-time ones Android's WorkManager library uses to update the widget
+
+Data and credits:
+
+* Gregorian–lunar date conversion, ROC year and the year's sexagenary name come from the Central Weather Administration (交通部中央氣象署) open data 「日曆資料-國農曆對照」 (A-A0087-001, https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001), used in accordance with the CWA Open Data Platform data usage rules (https://opendata.cwa.gov.tw/about/rules). The data covers 2022 to 2050.
+* The day's stem-branch, zodiac animal, clash and sha, moon phase, solar terms and festival dates are derived by me from traditional rules or astronomical formulas. They are not provided or endorsed by the Central Weather Administration.
+* Festival names follow the Wikipedia article 「漢族傳統節日」 (https://zh.wikipedia.org/zh-tw/漢族傳統節日), CC BY-SA 4.0.
