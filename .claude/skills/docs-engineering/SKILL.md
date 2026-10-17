@@ -71,6 +71,7 @@ fastlane/metadata/android/
 
 - Keep language clear and approachable.
 - For zh-TW text, use Traditional Han characters only; never Simplified characters.
+- Address the reader politely as 「您」, never 「你」, in all 台灣漢語 text (store listings, changelogs, release notes, UI strings).
 - Refer to the written language as 「漢文」, never 「中文」, out of respect for the many ethnic groups in China and across East Asia who also use it; the Taiwanese UI language is 「台灣漢語」. In English, write "Han script" or "Traditional Han characters" rather than "Chinese" (see CLAUDE.md).
 - Preserve the existing tone: the app "speaks" in first person in store listings and changelogs; README and other docs use standard third-person technical writing.
 - Use established almanac terms: 農民曆 / 黃曆 / 通書 (Tung Shing), 國曆 (Gregorian calendar), 農曆 (lunar calendar), 民國 (ROC year), 干支 (sexagenary cycle), 生肖 (zodiac animal), 沖煞 (clash and sha direction), 閏月 (leap month).
