@@ -94,7 +94,9 @@ class MainActivity : ComponentActivity() {
                     val scope = rememberCoroutineScope()
                     val currentCalendar = calendar
                     val currentSettings = settings
-                    if (currentCalendar != null && currentSettings != null) {
+                    if (currentCalendar != null && currentCalendar.hasRunOut(LocalDate.now())) {
+                        DataRunOutScreen(currentCalendar, Modifier.padding(innerPadding))
+                    } else if (currentCalendar != null && currentSettings != null) {
                         AlmanacScreen(
                             calendar = currentCalendar,
                             settings = currentSettings,
@@ -105,6 +107,26 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+/** Shown instead of everything else once the bundled CWA data has ended. */
+@Composable
+fun DataRunOutScreen(calendar: CalendarData, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+    ) {
+        Text(stringResource(R.string.data_run_out_title), style = MaterialTheme.typography.headlineSmall)
+        Text(
+            stringResource(R.string.data_run_out_message, calendar.lastDate),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+        Spacer(Modifier.height(8.dp))
+        Attribution()
     }
 }
 

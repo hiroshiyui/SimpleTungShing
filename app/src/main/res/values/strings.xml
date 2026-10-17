@@ -13,6 +13,9 @@
     <string name="widget_header_pattern">EEE, MMM y</string>
     <string name="widget_lunar_date">Lunar %1$s</string>
     <string name="widget_out_of_range">Out of data range</string>
+    <string name="data_run_out_title">Calendar data has run out</string>
+    <string name="data_run_out_message">The CWA calendar data bundled with this app ends on %1$s, so it can no longer show the almanac. Please update the app to get newer data.</string>
+    <string name="widget_data_run_out">Calendar data has run out. Please update the app.</string>
     <string name="out_of_range">This date is outside the data range (%1$s to %2$s).</string>
     <string name="label_lunar">Lunar date</string>
     <string name="label_year">Year</string>

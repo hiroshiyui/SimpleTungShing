@@ -13,6 +13,9 @@
     <string name="widget_header_pattern">y年M月 EEEE</string>
     <string name="widget_lunar_date">農曆%1$s</string>
     <string name="widget_out_of_range">超出資料範圍</string>
+    <string name="data_run_out_title">日曆資料已用完</string>
+    <string name="data_run_out_message">本程式內建的中央氣象署日曆資料只到 %1$s，因此無法再顯示農民曆。請您更新本程式以取得新的資料。</string>
+    <string name="widget_data_run_out">日曆資料已用完，請您更新程式。</string>
     <string name="out_of_range">此日期超出資料範圍（%1$s 至 %2$s）</string>
     <string name="label_lunar">農曆</string>
     <string name="label_year">歲次</string>

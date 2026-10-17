@@ -27,6 +27,12 @@ class CalendarDataTest {
     }
 
     @Test
+    fun runsOutAfterLastDate() {
+        assertEquals(false, calendar.hasRunOut(LocalDate.of(2050, 12, 31)))
+        assertEquals(true, calendar.hasRunOut(LocalDate.of(2051, 1, 1)))
+    }
+
+    @Test
     fun lunarNewYear2026() {
         val day = calendar.lookup(LocalDate.of(2026, 2, 17))!!
         assertEquals(115, day.rocYear)

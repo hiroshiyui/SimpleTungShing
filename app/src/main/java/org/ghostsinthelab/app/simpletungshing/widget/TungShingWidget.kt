@@ -41,6 +41,7 @@ import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
+import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import kotlinx.coroutines.Dispatchers
@@ -121,6 +122,23 @@ class TungShingWidget : GlanceAppWidget() {
             },
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (calendar.hasRunOut(today)) {
+                Text(
+                    text = context.getString(R.string.widget_data_run_out),
+                    maxLines = 4,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = GlanceTheme.colors.onSurface,
+                        textAlign = when (settings.alignment) {
+                            ContentAlignment.START -> TextAlign.Start
+                            ContentAlignment.CENTER -> TextAlign.Center
+                            ContentAlignment.END -> TextAlign.End
+                        },
+                    ),
+                )
+                return@Column
+            }
             Line(
                 today.format(DateTimeFormatter.ofPattern(context.getString(R.string.widget_header_pattern), locale)),
                 13.sp, GlanceTheme.colors.onSurfaceVariant,
