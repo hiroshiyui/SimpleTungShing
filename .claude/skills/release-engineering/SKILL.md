@@ -26,7 +26,7 @@ The established release workflow follows this pattern:
 4. **Run the tests** — `./gradlew :app:test`, so the tag lands on a known good state.
 5. **Create release commit** — commit message format: `Release <versionName>` with `Signed-off-by` trailer.
 6. **Tag the release** — lightweight tag matching versionName (e.g. `1.0.1`). Tags are NOT annotated.
-7. **Build signed APKs** — only now, after the commit and tag: F-Droid builds reproducibly from the tagged commit, so the published APKs have to be built from exactly that commit. Signing requires a keystore passphrase, so **do not run the build automatically**. Prompt the user to build the signed APKs manually in Android Studio (Build > Generate Signed APK) or via the command line. Output: `app/build/outputs/apk/release/` (debug builds go to `app/build/outputs/apk/debug/`). Android Studio may also leave copies in `app/release/` and `app/debug/`, but the user signs the ones under `app/build/outputs/apk/`. Wait for the user to confirm the build is complete before proceeding.
+7. **Build signed APKs** — only now, after the commit and tag: F-Droid builds reproducibly from the tagged commit, so the published APKs have to be built from exactly that commit. Signing requires a keystore passphrase, so **do not run the build automatically**. Prompt the user to build the signed APKs manually in Android Studio (Build > Generate Signed APK) or via the command line. Output: `app/build/outputs/apk/release/simpletungshing_v<version>-release.apk` (debug builds go to `app/build/outputs/apk/debug/`). Android Studio may also leave copies in `app/release/` and `app/debug/`, but the user signs the ones under `app/build/outputs/apk/`. Wait for the user to confirm the build is complete before proceeding.
 8. **GPG-sign** the APKs (see GPG Signing below), then **push** the commit and tag and create the GitHub Release when the user confirms.
 
 ### Git Conventions
@@ -79,17 +79,15 @@ The app bundles the CWA dataset `app/src/main/assets/A-A0087-001.csv` (「日曆
 
 GPG signing requires interactive passphrase entry — **do not run `gpg` commands automatically**. Instead, prompt the user to sign the APKs manually with the commands below.
 
-No `archivesName` is configured, so the APK files keep AGP's default names: `app-release.apk` and `app-debug.apk`. List `app/build/outputs/apk/{debug,release}/` to confirm the actual names before giving commands — if the user later adds an `archivesName`, use that.
+`app/build.gradle.kts` sets `base.archivesName` to `simpletungshing_v<versionName>`, so the APKs already carry versioned names: `simpletungshing_v<version>-release.apk` (signed; an unsigned build is `…-release-unsigned.apk`) and `simpletungshing_v<version>-debug.apk`. List `app/build/outputs/apk/{debug,release}/` to confirm the actual names before giving commands.
 
 Provide the user with the exact commands to run:
 ```bash
 gpg --detach-sign --armor <apk-file>
 ```
 
-For example, from the project root, after copying to versioned names (see GitHub Release below):
+For example, from the project root:
 ```bash
-cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/simpletungshing_v1.0.1-release.apk
-cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/simpletungshing_v1.0.1-debug.apk
 gpg --detach-sign --armor app/build/outputs/apk/release/simpletungshing_v1.0.1-release.apk
 gpg --detach-sign --armor app/build/outputs/apk/debug/simpletungshing_v1.0.1-debug.apk
 ```
@@ -136,11 +134,9 @@ EOF
   <apk-and-asc-files...>
 ```
 
-Upload **both** debug and release APKs along with their `.asc` signature files (4 assets total), all from `app/build/outputs/apk/{debug,release}/`. The default names (`app-debug.apk`, `app-release.apk`) don't say which app or version they are, so suggest the user copy them to versioned names **before** GPG signing, and upload those:
+Upload **both** debug and release APKs along with their `.asc` signature files (4 assets total), all from `app/build/outputs/apk/{debug,release}/`; they are already named by version:
 - `simpletungshing_v<version>-debug.apk` (+ `.asc`)
 - `simpletungshing_v<version>-release.apk` (+ `.asc`)
-
-Agree on the asset names with the user before giving the signing commands.
 
 The release title matches the tag/versionName (e.g. `1.0.1`).
 

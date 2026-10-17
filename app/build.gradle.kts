@@ -41,6 +41,11 @@ android {
     }
 }
 
+// APKs come out as simpletungshing_v<versionName>-<buildType>.apk, the names used for releases.
+base {
+    archivesName = "simpletungshing_v${android.defaultConfig.versionName}"
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
