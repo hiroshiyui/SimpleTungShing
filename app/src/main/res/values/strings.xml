@@ -13,6 +13,7 @@
     <string name="label_year">歲次</string>
     <string name="label_day_ganzhi">日干支</string>
     <string name="label_chong_sha">沖煞</string>
+    <string name="label_festivals">節日</string>
     <string name="label_moon_phase">月相</string>
     <string name="moon_phase_value">%1$s（亮面約 %2$d%%）</string>
     <string name="settings_title">小工具外觀</string>
@@ -22,6 +23,13 @@
     <string name="style_glass">玻璃質感</string>
     <string name="style_glass_note">桌面小工具無法模糊背後的畫面，玻璃質感以半透明漸層與亮邊呈現。</string>
     <string name="settings_opacity">背景不透明度：%1$d%%</string>
+    <string name="settings_layout">版面</string>
+    <string name="settings_margin">外距（小工具邊界至背景）：%1$d dp</string>
+    <string name="settings_padding">內距（背景邊緣至文字）：%1$d dp</string>
+    <string name="settings_alignment">文字對齊</string>
+    <string name="align_start">靠左</string>
+    <string name="align_center">置中</string>
+    <string name="align_end">靠右</string>
     <string name="settings_show_moon">顯示月相</string>
     <string name="settings_moon_method">月相推算方式</string>
     <string name="moon_method_lunar">依農曆日期</string>
@@ -30,5 +38,6 @@
     <string name="moon_method_astronomical_note">依月球與太陽的位置計算當地正午的月相，不受資料範圍限制。</string>
     <string name="attribution_source">資料來源：交通部中央氣象署「日曆資料-國農曆對照」</string>
     <string name="attribution_license">依中央氣象署開放資料平臺資料使用規範</string>
-    <string name="attribution_derived">日干支、沖煞、月相由本程式依傳統規則或天文公式推算，非中央氣象署提供。</string>
+    <string name="attribution_festivals">節日名稱參考維基百科「漢族傳統節日」條目</string>
+    <string name="attribution_derived">日干支、沖煞、月相與節日由本程式依傳統規則或天文公式推算，非中央氣象署提供。</string>
 </resources>

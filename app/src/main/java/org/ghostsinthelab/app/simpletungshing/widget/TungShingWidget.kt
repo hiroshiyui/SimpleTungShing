@@ -28,6 +28,7 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Row
@@ -49,12 +50,16 @@ import org.ghostsinthelab.app.simpletungshing.MainActivity
 import org.ghostsinthelab.app.simpletungshing.R
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
+import org.ghostsinthelab.app.simpletungshing.data.Festivals
+import org.ghostsinthelab.app.simpletungshing.data.LunarDay
 import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
 import java.time.LocalDate
 
 class TungShingWidget : GlanceAppWidget() {
 
-    override val sizeMode = SizeMode.Responsive(setOf(COMPACT, FULL))
+    // Exact rather than responsive buckets: the user's margin and padding eat into the
+    // real size, which decides whether the full layout fits.
+    override val sizeMode = SizeMode.Exact
 
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
@@ -76,8 +81,24 @@ class TungShingWidget : GlanceAppWidget() {
     @Composable
     private fun Content(today: LocalDate, calendar: CalendarData, settings: WidgetSettings) {
         val lunar = calendar.lookup(today)
-        val full = LocalSize.current.height >= FULL.height
+        val inset = ((settings.marginDp + settings.paddingDp) * 2).dp
+        val size = LocalSize.current
+        val full = size.width - inset >= FULL_CONTENT.width && size.height - inset >= FULL_CONTENT.height
         val moon = if (settings.showMoon) MoonPhase.of(settings.moonMethod, today, lunar) else null
+        Box(modifier = GlanceModifier.fillMaxSize().padding(settings.marginDp.dp)) {
+            Body(today, lunar, calendar, settings, moon, full)
+        }
+    }
+
+    @Composable
+    private fun Body(
+        today: LocalDate,
+        lunar: LunarDay?,
+        calendar: CalendarData,
+        settings: WidgetSettings,
+        moon: MoonPhase?,
+        full: Boolean,
+    ) {
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
@@ -87,9 +108,13 @@ class TungShingWidget : GlanceAppWidget() {
                     contentScale = ContentScale.FillBounds,
                 )
                 .cornerRadius(16.dp)
-                .padding(12.dp)
+                .padding(settings.paddingDp.dp)
                 .clickable(actionStartActivity<MainActivity>()),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = when (settings.alignment) {
+                ContentAlignment.START -> Alignment.Start
+                ContentAlignment.CENTER -> Alignment.CenterHorizontally
+                ContentAlignment.END -> Alignment.End
+            },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Line(
@@ -115,6 +140,10 @@ class TungShingWidget : GlanceAppWidget() {
                 return@Column
             }
             Line("農曆${Almanac.lunarDateName(lunar)}", 16.sp, GlanceTheme.colors.onSurface, bold = true)
+            val festivals = Festivals.on(today, calendar)
+            if (festivals.isNotEmpty()) {
+                Line(festivals.joinToString("、"), 13.sp, GlanceTheme.colors.primary, bold = true)
+            }
             if (full) {
                 Line(
                     "${lunar.yearGanZhi}年（${Almanac.zodiacOf(lunar.yearGanZhi)}）${Almanac.dayGanZhi(today)}日",
@@ -158,8 +187,8 @@ class TungShingWidget : GlanceAppWidget() {
     }
 
     companion object {
-        private val COMPACT = DpSize(110.dp, 110.dp)
-        private val FULL = DpSize(160.dp, 160.dp)
+        /** Room the full layout needs inside margin and padding (a 160dp widget at the default 12dp padding). */
+        private val FULL_CONTENT = DpSize(136.dp, 136.dp)
         private val REFRESHED_AT = longPreferencesKey("refreshed_at")
 
         /** Re-renders every placed widget so it picks up the current date. */

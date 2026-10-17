@@ -48,6 +48,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
@@ -57,6 +58,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
+import org.ghostsinthelab.app.simpletungshing.data.Festivals
 import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
 import org.ghostsinthelab.app.simpletungshing.ui.theme.SimpleTungShingTheme
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
@@ -69,6 +71,7 @@ import kotlin.math.roundToInt
 
 private const val DATASET_URL = "https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001"
 private const val RULES_URL = "https://opendata.cwa.gov.tw/about/rules"
+private const val FESTIVALS_URL = "https://zh.wikipedia.org/zh-tw/漢族傳統節日"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -189,6 +192,7 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
                 return@Column
             }
             DetailRow(stringResource(R.string.label_lunar), Almanac.lunarDateName(lunar, withSize = true))
+            Festivals.on(date, calendar).takeIf { it.isNotEmpty() }?.let { FestivalRow(it) }
             DetailRow(
                 stringResource(R.string.label_year),
                 "${lunar.yearGanZhi}年 · 生肖${Almanac.zodiacOf(lunar.yearGanZhi)}",
@@ -197,6 +201,25 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
             DetailRow(stringResource(R.string.label_chong_sha), "${Almanac.chong(date)} ${Almanac.sha(date)}")
             MoonPhase.of(settings.moonMethod, date, lunar)?.let { MoonRow(it) }
         }
+    }
+}
+
+@Composable
+private fun FestivalRow(names: List<String>) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(
+            stringResource(R.string.label_festivals),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            names.joinToString("、"),
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.End,
+        )
     }
 }
 
@@ -244,6 +267,7 @@ private fun Attribution() {
     )
     val source = stringResource(R.string.attribution_source)
     val license = stringResource(R.string.attribution_license)
+    val festivals = stringResource(R.string.attribution_festivals)
     val text = buildAnnotatedString {
         withLink(LinkAnnotation.Url(DATASET_URL, linkStyles)) { append(source) }
         append("（A-A0087-001），")
@@ -252,6 +276,13 @@ private fun Attribution() {
     }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(text, style = MaterialTheme.typography.bodySmall)
+        Text(
+            buildAnnotatedString {
+                withLink(LinkAnnotation.Url(FESTIVALS_URL, linkStyles)) { append(festivals) }
+                append("（CC BY-SA 4.0）。")
+            },
+            style = MaterialTheme.typography.bodySmall,
+        )
         Text(
             stringResource(R.string.attribution_derived),
             style = MaterialTheme.typography.bodySmall,

@@ -24,15 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.ghostsinthelab.app.simpletungshing.data.MoonMethod
 import org.ghostsinthelab.app.simpletungshing.widget.BackgroundStyle
+import org.ghostsinthelab.app.simpletungshing.widget.ContentAlignment
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
 import kotlin.math.roundToInt
 
 @Composable
 fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -> Unit) {
-    // Follow the slider locally while dragging; save once it is released.
-    var dragging by remember { mutableStateOf<Float?>(null) }
-    val opacity = dragging ?: settings.opacity
-
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -52,15 +49,36 @@ fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -
             )
             if (settings.style == BackgroundStyle.GLASS) Note(stringResource(R.string.style_glass_note))
 
-            Label(stringResource(R.string.settings_opacity, (opacity * 100).roundToInt()))
-            Slider(
-                value = opacity,
-                onValueChange = { dragging = it },
-                onValueChangeFinished = {
-                    dragging?.let { onChange(settings.copy(opacity = it)) }
-                    dragging = null
-                },
+            SettingSlider(
+                value = settings.opacity,
+                range = 0f..1f,
                 steps = 19,
+                label = { stringResource(R.string.settings_opacity, (it * 100).roundToInt()) },
+                onCommit = { onChange(settings.copy(opacity = it)) },
+            )
+
+            Label(stringResource(R.string.settings_layout))
+            DpSlider(
+                value = settings.marginDp,
+                range = WidgetSettings.MARGIN_RANGE,
+                label = { stringResource(R.string.settings_margin, it) },
+                onCommit = { onChange(settings.copy(marginDp = it)) },
+            )
+            DpSlider(
+                value = settings.paddingDp,
+                range = WidgetSettings.PADDING_RANGE,
+                label = { stringResource(R.string.settings_padding, it) },
+                onCommit = { onChange(settings.copy(paddingDp = it)) },
+            )
+            Note(stringResource(R.string.settings_alignment))
+            Choices(
+                options = listOf(
+                    ContentAlignment.START to stringResource(R.string.align_start),
+                    ContentAlignment.CENTER to stringResource(R.string.align_center),
+                    ContentAlignment.END to stringResource(R.string.align_end),
+                ),
+                selected = settings.alignment,
+                onSelect = { onChange(settings.copy(alignment = it)) },
             )
 
             Row(
@@ -94,6 +112,44 @@ fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -
             )
         }
     }
+}
+
+/** A slider that follows the thumb locally while dragging and saves once released. */
+@Composable
+private fun SettingSlider(
+    value: Float,
+    range: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    label: @Composable (Float) -> String,
+    onCommit: (Float) -> Unit,
+) {
+    var dragging by remember { mutableStateOf<Float?>(null) }
+    val shown = dragging ?: value
+    Column {
+        Note(label(shown))
+        Slider(
+            value = shown,
+            onValueChange = { dragging = it },
+            onValueChangeFinished = {
+                dragging?.let(onCommit)
+                dragging = null
+            },
+            valueRange = range,
+            steps = steps,
+        )
+    }
+}
+
+/** Whole dp in steps of 2. */
+@Composable
+private fun DpSlider(value: Int, range: IntRange, label: @Composable (Int) -> String, onCommit: (Int) -> Unit) {
+    SettingSlider(
+        value = value.toFloat(),
+        range = range.first.toFloat()..range.last.toFloat(),
+        steps = (range.last - range.first) / 2 - 1,
+        label = { label(it.roundToInt()) },
+        onCommit = { onCommit(it.roundToInt()) },
+    )
 }
 
 @Composable

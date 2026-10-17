@@ -13,9 +13,18 @@ Simple Tung Shing 包含或使用下列第三方資源。
 - **Terms 使用規範**: [中央氣象署開放資料平臺資料使用規範 (CWA Open Data Platform data usage rules)](https://opendata.cwa.gov.tw/about/rules)
 - **Bundled as 內建檔案**: `app/src/main/assets/A-A0087-001.csv` (unmodified 未經修改)
 
-The dataset provides the Gregorian–lunar date conversion, ROC year, and the year's sexagenary name. The day's stem-branch (日干支), zodiac animal (生肖), clash (沖), sha direction (煞) and moon phase (月相) are derived by this app according to traditional rules or an astronomical formula; they are not provided or endorsed by the Central Weather Administration.
+The dataset provides the Gregorian–lunar date conversion, ROC year, and the year's sexagenary name. The day's stem-branch (日干支), zodiac animal (生肖), clash (沖), sha direction (煞), moon phase (月相) and festival dates (節日) are derived by this app according to traditional rules or an astronomical formula; they are not provided or endorsed by the Central Weather Administration.
 
-此資料集提供國曆與農曆日期對照、民國年及歲次干支。日干支、生肖、沖、煞、月相由本程式依傳統規則或天文公式推算，並非中央氣象署提供或認可。
+此資料集提供國曆與農曆日期對照、民國年及歲次干支。日干支、生肖、沖、煞、月相與節日日期由本程式依傳統規則或天文公式推算，並非中央氣象署提供或認可。
+
+### 漢族傳統節日 (Wikipedia)
+
+- **Source 來源**: <https://zh.wikipedia.org/zh-tw/漢族傳統節日>, by Wikipedia contributors 維基百科貢獻者
+- **License 授權**: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+
+The festival and observance names, and their date rules, follow this article. Where it lists several dates for one festival, the date customary in Taiwan is used, otherwise the first listed. Solar terms (清明, 夏至, 立秋, 冬至) are computed by this app.
+
+節日名稱與日期規則參考此條目；列有多個日期者採臺灣習俗，否則採第一個日期。節氣（清明、夏至、立秋、冬至）由本程式計算。
 
 ## Libraries 函式庫
 

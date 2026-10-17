@@ -29,17 +29,19 @@ Unit tests read the real dataset via the relative path `src/main/assets/A-A0087-
 
 **`data/MoonPhase`** is also app-derived, by a user-selectable `MoonMethod`: `LUNAR_DAY` (初一 = new moon, mean synodic month; unavailable outside the dataset) or `ASTRONOMICAL` (Meeus low-precision phase angle at local noon). `widget/MoonBitmap` draws it for both the widget and the app.
 
+**`data/SolarTerms`** computes the date (Taiwan time, matching CWA) the sun reaches a longitude (Meeus ch. 25, ~15 min accuracy). **`data/Festivals`** lists the folk and religious tables of zh.wikipedia 「漢族傳統節日」 (CC BY-SA 4.0, credited in-app): lunar dates in non-leap months, with Taiwan-custom dates where the article gives several; 寒食/清明/冬至/三伏 come from `SolarTerms` and 庚 days.
+
 **Widget** (`widget/`) uses Jetpack Glance:
 - `TungShingWidget` loads `CalendarData` in `provideGlance` but reads `LocalDate.now()` *inside* composition, after reading the `REFRESHED_AT` Glance state key. A running Glance session only recomposes when state it reads changes, so `refreshAll()` bumps that key and then calls `update()` — refreshing without bumping it can leave a stale date on screen.
-- Appearance comes from `WidgetSettings` (a Preferences DataStore edited in the app's settings card, shared by all widgets). The widget collects its flow inside `provideContent`, and `WidgetSettings.save()` also calls `refreshAll()` for widgets without a running session. Backgrounds are shape drawables (`widget_bg_*`) drawn with Glance's `background(ImageProvider, alpha)` for transparency; colors live in `widget_colors.xml` with `-night` and `-v31` (wallpaper dynamic color) variants. Widgets cannot blur what is behind them, so the glass style is only a translucent gradient with a sheen and edge.
-- Responsive sizes: below `FULL` (160dp tall) only the date lines show; the 干支/沖煞 lines need the full size.
+- Appearance comes from `WidgetSettings` (a Preferences DataStore edited in the app's settings card, shared by all widgets). The widget collects its flow inside `provideContent`, and `WidgetSettings.save()` also calls `refreshAll()` for widgets without a running session. Backgrounds are shape drawables (`widget_bg_*`) drawn with Glance's `background(ImageProvider, alpha)` for transparency; colors live in `widget_colors.xml` with `-night` and `-v31` (wallpaper dynamic color) variants. Layout settings (margin outside the background, padding inside it, horizontal alignment) are applied in `Content`/`Body`. Widgets cannot blur what is behind them, so the glass style is only a translucent gradient with a sheen and edge.
+- `SizeMode.Exact`: the 干支/沖煞 lines show only when `FULL_CONTENT` (136×136dp) fits inside the user's margin and padding; otherwise only the date lines show.
 - `TungShingWidgetReceiver` schedules an inexact, non-wakeup `AlarmManager.setWindow(RTC, …)` just after local midnight (no exact-alarm permission). It reschedules from `onUpdate`, from app start (`MainActivity.onCreate`), and on its custom midnight action plus `TIME_SET`, `TIMEZONE_CHANGED` and `MY_PACKAGE_REPLACED` (all declared in the manifest); it cancels in `onDisabled`.
 
 **App** (`MainActivity.kt`): one Compose screen for browsing dates within the dataset range (day stepping plus a Material 3 date picker, which works in UTC-midnight millis — convert with `ZoneOffset.UTC`), the widget settings card (`WidgetSettingsSection.kt`), and the data attribution.
 
 ## Conventions
 
-- **Attribution is required.** Any place describing the data must credit 交通部中央氣象署 「日曆資料-國農曆對照」 (https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001) and link https://opendata.cwa.gov.tw/about/rules. The app also states that 日干支/沖煞/月相 are app-derived; never present derived items as CWA data.
+- **Attribution is required.** Any place describing the data must credit 交通部中央氣象署 「日曆資料-國農曆對照」 (https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001) and link https://opendata.cwa.gov.tw/about/rules. The app also states that 日干支/沖煞/月相/節日 are app-derived, and credits the Wikipedia festival list; never present derived items as CWA data.
 - UI strings are Traditional Chinese (default `values/strings.xml`); use Traditional characters only.
-- The CSV has no 節氣 or 宜忌. Adding those needs a new data source or solar-term computation, so discuss with the user first rather than inventing rules.
+- The CSV has no 節氣 or 宜忌. Solar terms are computed in `SolarTerms`; 宜忌 needs a new data source, so discuss with the user first rather than inventing rules.
 - Commits: plain imperative subject, `--signoff`; default branch `main`. Use the project skills in `.claude/skills/` (`commit-and-push`, `release-engineering`, `docs-engineering`, `code-review-and-security-audit`) for those tasks.
