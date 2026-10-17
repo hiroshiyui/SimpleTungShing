@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Simple Tung Shing</string>
+    <string name="widget_name">農民曆</string>
+    <string name="widget_description">今日國曆、農曆、干支與沖煞</string>
+    <string name="previous_day">前一日</string>
+    <string name="today">今天</string>
+    <string name="next_day">後一日</string>
+    <string name="pick_date">選擇日期</string>
+    <string name="ok">確定</string>
+    <string name="cancel">取消</string>
+    <string name="out_of_range">此日期超出資料範圍（%1$s 至 %2$s）</string>
+    <string name="label_lunar">農曆</string>
+    <string name="label_year">歲次</string>
+    <string name="label_day_ganzhi">日干支</string>
+    <string name="label_chong_sha">沖煞</string>
+    <string name="attribution_source">資料來源：交通部中央氣象署「日曆資料-國農曆對照」</string>
+    <string name="attribution_license">依中央氣象署開放資料平臺資料使用規範</string>
+    <string name="attribution_derived">日干支、沖煞由本程式依傳統規則推算，非中央氣象署提供。</string>
+</resources>
