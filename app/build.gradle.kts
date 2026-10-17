@@ -23,7 +23,9 @@ android {
         release {
             optimization {
                 enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
+                keepRules {
+                    files.add(file("proguard-rules.pro"))
+                }
             }
         }
     }
@@ -33,6 +35,9 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    androidResources {
+        generateLocaleConfig = true
     }
 }
 

@@ -55,6 +55,7 @@ import org.ghostsinthelab.app.simpletungshing.data.LunarDay
 import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
 import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class TungShingWidget : GlanceAppWidget() {
 
@@ -100,6 +101,8 @@ class TungShingWidget : GlanceAppWidget() {
         moon: MoonPhase?,
         full: Boolean,
     ) {
+        val context = LocalContext.current
+        val locale = context.resources.configuration.locales[0]
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
@@ -119,7 +122,7 @@ class TungShingWidget : GlanceAppWidget() {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Line(
-                "${today.year}年${today.monthValue}月 ${Almanac.weekdayName(today.dayOfWeek)}",
+                today.format(DateTimeFormatter.ofPattern(context.getString(R.string.widget_header_pattern), locale)),
                 13.sp, GlanceTheme.colors.onSurfaceVariant,
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -137,10 +140,10 @@ class TungShingWidget : GlanceAppWidget() {
                 }
             }
             if (lunar == null) {
-                Line("超出資料範圍", 13.sp, GlanceTheme.colors.onSurface)
+                Line(context.getString(R.string.widget_out_of_range), 13.sp, GlanceTheme.colors.onSurface)
                 return@Column
             }
-            Line("農曆${Almanac.lunarDateName(lunar)}", 16.sp, GlanceTheme.colors.onSurface, bold = true)
+            Line(context.getString(R.string.widget_lunar_date, Almanac.lunarDateName(lunar)), 16.sp, GlanceTheme.colors.onSurface, bold = true)
             val festivals = Festivals.on(today, calendar)
             // Skip the term when a festival already carries its name (清明 → 清明節, 冬至).
             val term = SolarTerms.termOn(today)?.takeIf { t -> festivals.none { it.startsWith(t) } }

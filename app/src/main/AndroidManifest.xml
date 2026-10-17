@@ -33,6 +33,8 @@
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+                <action android:name="org.ghostsinthelab.app.simpletungshing.action.MIDNIGHT" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

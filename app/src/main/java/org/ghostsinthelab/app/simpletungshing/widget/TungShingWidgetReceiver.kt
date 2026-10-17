@@ -28,11 +28,13 @@ class TungShingWidgetReceiver : GlanceAppWidgetReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
         when (intent.action) {
             ACTION_MIDNIGHT,
             Intent.ACTION_TIME_CHANGED,
             Intent.ACTION_TIMEZONE_CHANGED,
+            // Also sent for a per-app language change. Glance would handle it with a plain
+            // update(), which leaves a running session stale, and would take goAsync() first.
+            Intent.ACTION_LOCALE_CHANGED,
             Intent.ACTION_MY_PACKAGE_REPLACED -> {
                 scheduleMidnightRefresh(context)
                 val pending = goAsync()
@@ -44,6 +46,7 @@ class TungShingWidgetReceiver : GlanceAppWidgetReceiver() {
                     }
                 }
             }
+            else -> super.onReceive(context, intent)
         }
     }
 

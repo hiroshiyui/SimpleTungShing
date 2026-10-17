@@ -1,6 +1,5 @@
 package org.ghostsinthelab.app.simpletungshing.data
 
-import java.time.DayOfWeek
 import java.time.LocalDate
 
 /**
@@ -76,7 +75,4 @@ object Almanac {
             (if (withSize) size else "") +
             dayName(lunar.day)
     }
-
-    fun weekdayName(dayOfWeek: DayOfWeek): String =
-        "星期" + "一二三四五六日"[dayOfWeek.value - 1]
 }

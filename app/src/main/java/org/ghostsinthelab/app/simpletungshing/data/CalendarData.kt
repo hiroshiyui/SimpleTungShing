@@ -48,41 +48,67 @@ class CalendarData private constructor(private val days: List<LunarDay>) {
 
         /** Parses CSV columns: 日期,民國年,農曆年,農曆月,農曆日,星期 (leap months as "閏N"). */
         fun parse(reader: Reader): CalendarData {
-            val rows = reader.readLines()
-                .drop(1) // header (carries the UTF-8 BOM)
-                .mapNotNull { line ->
-                    val fields = line.trim().split(',')
-                    if (fields.size < 5 || fields[0].isBlank()) return@mapNotNull null
-                    val month = fields[3]
-                    LunarDay(
-                        date = LocalDate.parse(fields[0]),
-                        rocYear = fields[1].toInt(),
-                        yearGanZhi = fields[2],
-                        month = month.removePrefix("閏").toInt(),
-                        isLeapMonth = month.startsWith("閏"),
-                        day = fields[4].toInt(),
-                        monthLength = null,
-                    )
-                }
-            require(rows.isNotEmpty()) { "Empty calendar data" }
-            rows.zipWithNext().forEach { (a, b) ->
-                require(b.date == a.date.plusDays(1)) { "Calendar data not contiguous at ${a.date}" }
+            // Hand-rolled rather than split()/LocalDate.parse(): this runs on every cold widget
+            // render, and the formatter-based version took well over a second on a phone.
+            val lines = reader.readLines()
+            val rocYears = IntArray(lines.size)
+            val yearNames = arrayOfNulls<String>(lines.size)
+            val months = IntArray(lines.size)
+            val leaps = BooleanArray(lines.size)
+            val days = IntArray(lines.size)
+            val names = HashMap<String, String>()
+            var firstDate: LocalDate? = null
+            var count = 0
+            for (line in lines.subList(1, lines.size)) { // the header carries the UTF-8 BOM
+                if (line.isBlank() || line[0] == ',') continue // trailing ",,,,," row
+                val c1 = line.indexOf(',')
+                val c2 = line.indexOf(',', c1 + 1)
+                val c3 = line.indexOf(',', c2 + 1)
+                val c4 = line.indexOf(',', c3 + 1)
+                require(c1 == 10 && c4 > c3) { "Malformed calendar row: $line" }
+                val date = LocalDate.of(line.int(0, 4), line.int(5, 7), line.int(8, 10))
+                if (firstDate == null) firstDate = date
+                require(date == firstDate.plusDays(count.toLong())) { "Calendar data not contiguous at $date" }
+                rocYears[count] = line.int(c1 + 1, c2)
+                yearNames[count] = line.substring(c2 + 1, c3).let { names.getOrPut(it) { it } }
+                val leap = line.startsWith("閏", c3 + 1)
+                leaps[count] = leap
+                months[count] = line.int(if (leap) c3 + 2 else c3 + 1, c4)
+                val c5 = line.indexOf(',', c4 + 1).let { if (it < 0) line.length else it }
+                days[count] = line.int(c4 + 1, c5)
+                count++
             }
-            return CalendarData(withMonthLengths(rows))
-        }
+            require(firstDate != null) { "Empty calendar data" }
 
-        private fun withMonthLengths(rows: List<LunarDay>): List<LunarDay> {
-            val result = ArrayList<LunarDay>(rows.size)
+            // A lunar month's length is known only when both its 初一 and the next month's 初一 are present.
+            val lengths = arrayOfNulls<Int>(count)
             var start = 0
-            while (start < rows.size) {
+            while (start < count) {
                 var end = start
-                while (end + 1 < rows.size && rows[end + 1].day != 1) end++
-                // Only a month seen from its 初一 up to the next month's 初一 has a known length.
-                val length = if (rows[start].day == 1 && end + 1 < rows.size) rows[end].day else null
-                for (i in start..end) result += rows[i].copy(monthLength = length)
+                while (end + 1 < count && days[end + 1] != 1) end++
+                val length = if (days[start] == 1 && end + 1 < count) days[end] else null
+                for (i in start..end) lengths[i] = length
                 start = end + 1
             }
-            return result
+            return CalendarData(
+                List(count) { i ->
+                    LunarDay(
+                        date = firstDate.plusDays(i.toLong()),
+                        rocYear = rocYears[i],
+                        yearGanZhi = yearNames[i]!!,
+                        month = months[i],
+                        isLeapMonth = leaps[i],
+                        day = days[i],
+                        monthLength = lengths[i],
+                    )
+                },
+            )
+        }
+
+        private fun String.int(from: Int, to: Int): Int {
+            var value = 0
+            for (i in from until to) value = value * 10 + (this[i] - '0')
+            return value
         }
     }
 }

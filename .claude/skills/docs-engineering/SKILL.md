@@ -10,11 +10,11 @@ You are performing documentation tasks for Simple Tung Shing.
 
 ## Bilingual Convention
 
-This project maintains documentation in both **English (en-US)** and **Traditional Chinese (zh-TW)**. When creating or updating user-facing text, always produce both language versions unless instructed otherwise.
+This project maintains documentation in both **English (en-US)** and **台灣漢語 in Traditional Han script (zh-TW)**. When creating or updating user-facing text, always produce both language versions unless instructed otherwise.
 
-- README.md uses interleaved bilingual sections (English heading/paragraph followed by Chinese equivalent).
+- README.md uses interleaved bilingual sections (English heading/paragraph followed by the 漢文 equivalent).
 - F-Droid metadata keeps separate locale directories.
-- In-app strings live in `app/src/main/res/values/strings.xml` and are currently Traditional Chinese only, since the almanac content itself is Chinese.
+- In-app strings live in `app/src/main/res/values/strings.xml` (English, the default) and `app/src/main/res/values-zh-rTW/strings.xml` (台灣漢語); update both together. Almanac content itself (lunar dates, 干支, festival names) stays in Han script in both.
 
 ## Project Documentation Files
 
@@ -70,7 +70,8 @@ fastlane/metadata/android/
 ## Writing Style
 
 - Keep language clear and approachable.
-- For zh-TW text, use Traditional Chinese characters only. Do not use Simplified Chinese.
+- For zh-TW text, use Traditional Han characters only; never Simplified characters.
+- Refer to the written language as 「漢文」, never 「中文」, out of respect for the many ethnic groups in China and across East Asia who also use it; the Taiwanese UI language is 「台灣漢語」. In English, write "Han script" or "Traditional Han characters" rather than "Chinese" (see CLAUDE.md).
 - Preserve the existing tone: the app "speaks" in first person in store listings and changelogs; README and other docs use standard third-person technical writing.
 - Use established almanac terms: 農民曆 / 黃曆 / 通書 (Tung Shing), 國曆 (Gregorian calendar), 農曆 (lunar calendar), 民國 (ROC year), 干支 (sexagenary cycle), 生肖 (zodiac animal), 沖煞 (clash and sha direction), 閏月 (leap month).
 - Describe traditional almanac content neutrally as folk custom and tradition, not as fact or prediction.

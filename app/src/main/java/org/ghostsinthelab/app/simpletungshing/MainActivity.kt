@@ -1,9 +1,11 @@
 package org.ghostsinthelab.app.simpletungshing
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,16 +43,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
@@ -62,22 +64,24 @@ import org.ghostsinthelab.app.simpletungshing.data.Festivals
 import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
 import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import org.ghostsinthelab.app.simpletungshing.ui.theme.SimpleTungShingTheme
+import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidget
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
 import org.ghostsinthelab.app.simpletungshing.widget.moonBitmap
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import kotlin.math.roundToInt
 
-private const val DATASET_URL = "https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001"
-private const val RULES_URL = "https://opendata.cwa.gov.tw/about/rules"
-private const val FESTIVALS_URL = "https://zh.wikipedia.org/zh-tw/漢族傳統節日"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TungShingWidgetReceiver.scheduleMidnightRefresh(this)
+        // Also catches a language chosen while the app was not running.
+        if (savedInstanceState == null) lifecycleScope.launch { TungShingWidget.refreshAll(applicationContext) }
         enableEdgeToEdge()
         setContent {
             SimpleTungShingTheme {
@@ -144,6 +148,7 @@ fun AlmanacScreen(
             modifier = Modifier.align(Alignment.CenterHorizontally),
         ) { Text(stringResource(R.string.pick_date)) }
         WidgetSettingsSection(settings, onSettingsChange)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) LanguageSection()
         Spacer(Modifier.height(8.dp))
         Attribution()
     }
@@ -173,8 +178,13 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             val rocYear = lunar?.rocYear ?: (date.year - 1911)
+            val locale = LocalConfiguration.current.locales[0]
             Text(
-                "民國${rocYear}年（${date.year}）${date.monthValue}月",
+                stringResource(
+                    R.string.app_header,
+                    rocYear,
+                    date.format(DateTimeFormatter.ofPattern(stringResource(R.string.app_header_pattern), locale)),
+                ),
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
@@ -183,7 +193,10 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-            Text(Almanac.weekdayName(date.dayOfWeek), style = MaterialTheme.typography.titleMedium)
+            Text(
+                date.dayOfWeek.getDisplayName(TextStyle.FULL, locale),
+                style = MaterialTheme.typography.titleMedium,
+            )
             Spacer(Modifier.height(12.dp))
             if (lunar == null) {
                 Text(
@@ -267,24 +280,14 @@ private fun Attribution() {
     val linkStyles = TextLinkStyles(
         SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline),
     )
-    val source = stringResource(R.string.attribution_source)
-    val license = stringResource(R.string.attribution_license)
-    val festivals = stringResource(R.string.attribution_festivals)
-    val text = buildAnnotatedString {
-        withLink(LinkAnnotation.Url(DATASET_URL, linkStyles)) { append(source) }
-        append("（A-A0087-001），")
-        withLink(LinkAnnotation.Url(RULES_URL, linkStyles)) { append(license) }
-        append("使用。")
-    }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(text, style = MaterialTheme.typography.bodySmall)
-        Text(
-            buildAnnotatedString {
-                withLink(LinkAnnotation.Url(FESTIVALS_URL, linkStyles)) { append(festivals) }
-                append("（CC BY-SA 4.0）。")
-            },
-            style = MaterialTheme.typography.bodySmall,
-        )
+        // These strings carry their links as HTML <a> tags.
+        for (id in listOf(R.string.attribution_data, R.string.attribution_festivals)) {
+            Text(
+                AnnotatedString.fromHtml(stringResource(id), linkStyles),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
         Text(
             stringResource(R.string.attribution_derived),
             style = MaterialTheme.typography.bodySmall,
