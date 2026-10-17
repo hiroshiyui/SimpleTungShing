@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Android Studio "Generate Signed APK" output
+/app/debug/
+/app/release/
