@@ -24,6 +24,23 @@ class FestivalsTest {
     }
 
     @Test
+    fun solarTermNames() {
+        assertEquals("立春", SolarTerms.termOn(LocalDate.of(2025, 2, 3)))
+        assertEquals("春分", SolarTerms.termOn(LocalDate.of(2025, 3, 20)))
+        assertEquals("霜降", SolarTerms.termOn(LocalDate.of(2025, 10, 23)))
+        assertEquals("立春", SolarTerms.termOn(LocalDate.of(2026, 2, 4)))
+        assertEquals(null, SolarTerms.termOn(LocalDate.of(2026, 10, 17)))
+        for (year in 2022..2050) {
+            val terms = generateSequence(LocalDate.of(year, 1, 1)) { it.plusDays(1) }
+                .takeWhile { it.year == year }
+                .mapNotNull { SolarTerms.termOn(it) }
+                .toList()
+            assertEquals("$year", 24, terms.toSet().size)
+            assertEquals("$year", 24, terms.size)
+        }
+    }
+
+    @Test
     fun lunarFestivals() {
         assertEquals(listOf("除夕"), on(2026, 2, 16))
         assertEquals(listOf("春節", "元始天尊誕"), on(2026, 2, 17))

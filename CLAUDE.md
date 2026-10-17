@@ -29,7 +29,7 @@ Unit tests read the real dataset via the relative path `src/main/assets/A-A0087-
 
 **`data/MoonPhase`** is also app-derived, by a user-selectable `MoonMethod`: `LUNAR_DAY` (初一 = new moon, mean synodic month; unavailable outside the dataset) or `ASTRONOMICAL` (Meeus low-precision phase angle at local noon). `widget/MoonBitmap` draws it for both the widget and the app.
 
-**`data/SolarTerms`** computes the date (Taiwan time, matching CWA) the sun reaches a longitude (Meeus ch. 25, ~15 min accuracy). **`data/Festivals`** lists the folk and religious tables of zh.wikipedia 「漢族傳統節日」 (CC BY-SA 4.0, credited in-app): lunar dates in non-leap months, with Taiwan-custom dates where the article gives several; 寒食/清明/冬至/三伏 come from `SolarTerms` and 庚 days.
+**`data/SolarTerms`** computes the date (Taiwan time, matching CWA) the sun reaches a longitude (Meeus ch. 25, ~15 min accuracy); `termOn(date)` names the 節氣 on a day (cached per year). The app shows it as its own row; the widget prepends it to the festival line unless a festival already carries the name (清明節, 冬至). **`data/Festivals`** lists the folk and religious tables of zh.wikipedia 「漢族傳統節日」 (CC BY-SA 4.0, credited in-app): lunar dates in non-leap months, with Taiwan-custom dates where the article gives several; 寒食/清明/冬至/三伏 come from `SolarTerms` and 庚 days.
 
 **Widget** (`widget/`) uses Jetpack Glance:
 - `TungShingWidget` loads `CalendarData` in `provideGlance` but reads `LocalDate.now()` *inside* composition, after reading the `REFRESHED_AT` Glance state key. A running Glance session only recomposes when state it reads changes, so `refreshAll()` bumps that key and then calls `update()` — refreshing without bumping it can leave a stale date on screen.
@@ -41,7 +41,7 @@ Unit tests read the real dataset via the relative path `src/main/assets/A-A0087-
 
 ## Conventions
 
-- **Attribution is required.** Any place describing the data must credit 交通部中央氣象署 「日曆資料-國農曆對照」 (https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001) and link https://opendata.cwa.gov.tw/about/rules. The app also states that 日干支/沖煞/月相/節日 are app-derived, and credits the Wikipedia festival list; never present derived items as CWA data.
+- **Attribution is required.** Any place describing the data must credit 交通部中央氣象署 「日曆資料-國農曆對照」 (https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001) and link https://opendata.cwa.gov.tw/about/rules. The app also states that 日干支/沖煞/月相/節氣/節日 are app-derived, and credits the Wikipedia festival list; never present derived items as CWA data.
 - UI strings are Traditional Chinese (default `values/strings.xml`); use Traditional characters only.
 - The CSV has no 節氣 or 宜忌. Solar terms are computed in `SolarTerms`; 宜忌 needs a new data source, so discuss with the user first rather than inventing rules.
 - Commits: plain imperative subject, `--signoff`; default branch `main`. Use the project skills in `.claude/skills/` (`commit-and-push`, `release-engineering`, `docs-engineering`, `code-review-and-security-audit`) for those tasks.

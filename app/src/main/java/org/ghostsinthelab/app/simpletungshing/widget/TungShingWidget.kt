@@ -53,6 +53,7 @@ import org.ghostsinthelab.app.simpletungshing.data.CalendarData
 import org.ghostsinthelab.app.simpletungshing.data.Festivals
 import org.ghostsinthelab.app.simpletungshing.data.LunarDay
 import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
+import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import java.time.LocalDate
 
 class TungShingWidget : GlanceAppWidget() {
@@ -141,8 +142,11 @@ class TungShingWidget : GlanceAppWidget() {
             }
             Line("農曆${Almanac.lunarDateName(lunar)}", 16.sp, GlanceTheme.colors.onSurface, bold = true)
             val festivals = Festivals.on(today, calendar)
-            if (festivals.isNotEmpty()) {
-                Line(festivals.joinToString("、"), 13.sp, GlanceTheme.colors.primary, bold = true)
+            // Skip the term when a festival already carries its name (清明 → 清明節, 冬至).
+            val term = SolarTerms.termOn(today)?.takeIf { t -> festivals.none { it.startsWith(t) } }
+            val observances = listOfNotNull(term) + festivals
+            if (observances.isNotEmpty()) {
+                Line(observances.joinToString("、"), 13.sp, GlanceTheme.colors.primary, bold = true)
             }
             if (full) {
                 Line(

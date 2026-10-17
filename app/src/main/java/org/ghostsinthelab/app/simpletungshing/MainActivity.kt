@@ -60,6 +60,7 @@ import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
 import org.ghostsinthelab.app.simpletungshing.data.Festivals
 import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
+import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import org.ghostsinthelab.app.simpletungshing.ui.theme.SimpleTungShingTheme
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
@@ -192,6 +193,7 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
                 return@Column
             }
             DetailRow(stringResource(R.string.label_lunar), Almanac.lunarDateName(lunar, withSize = true))
+            SolarTerms.termOn(date)?.let { DetailRow(stringResource(R.string.label_solar_term), it) }
             Festivals.on(date, calendar).takeIf { it.isNotEmpty() }?.let { FestivalRow(it) }
             DetailRow(
                 stringResource(R.string.label_year),

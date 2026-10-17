@@ -3,6 +3,7 @@ package org.ghostsinthelab.app.simpletungshing.data
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -20,9 +21,22 @@ object SolarTerms {
     const val LIQIU = 135.0 // 立秋
     const val DONGZHI = 270.0 // 冬至
 
+    /** The 24 terms in order of longitude, 0° (春分) to 345° (驚蟄). */
+    private val NAMES = listOf(
+        "春分", "清明", "穀雨", "立夏", "小滿", "芒種", "夏至", "小暑", "大暑", "立秋", "處暑", "白露",
+        "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "冬至", "小寒", "大寒", "立春", "雨水", "驚蟄",
+    )
+
     private val ZONE: ZoneId = ZoneId.of("Asia/Taipei")
+    private val termsByYear = ConcurrentHashMap<Int, Map<LocalDate, String>>()
     private const val TROPICAL_YEAR = 365.2422
     private const val MILLIS_PER_DAY = 86_400_000.0
+
+    /** The name of the solar term falling on [date], if any. */
+    fun termOn(date: LocalDate): String? =
+        termsByYear.getOrPut(date.year) {
+            NAMES.withIndex().associate { (i, name) -> dateOf(date.year, i * 15.0) to name }
+        }[date]
 
     /** The date in [year] on which the sun reaches [longitude] degrees. */
     fun dateOf(year: Int, longitude: Double): LocalDate {

@@ -13,6 +13,7 @@
     <string name="label_year">歲次</string>
     <string name="label_day_ganzhi">日干支</string>
     <string name="label_chong_sha">沖煞</string>
+    <string name="label_solar_term">節氣</string>
     <string name="label_festivals">節日</string>
     <string name="label_moon_phase">月相</string>
     <string name="moon_phase_value">%1$s（亮面約 %2$d%%）</string>
@@ -39,5 +40,5 @@
     <string name="attribution_source">資料來源：交通部中央氣象署「日曆資料-國農曆對照」</string>
     <string name="attribution_license">依中央氣象署開放資料平臺資料使用規範</string>
     <string name="attribution_festivals">節日名稱參考維基百科「漢族傳統節日」條目</string>
-    <string name="attribution_derived">日干支、沖煞、月相與節日由本程式依傳統規則或天文公式推算，非中央氣象署提供。</string>
+    <string name="attribution_derived">日干支、沖煞、月相、節氣與節日由本程式依傳統規則或天文公式推算，非中央氣象署提供。</string>
 </resources>

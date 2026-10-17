@@ -13,9 +13,9 @@ Simple Tung Shing 包含或使用下列第三方資源。
 - **Terms 使用規範**: [中央氣象署開放資料平臺資料使用規範 (CWA Open Data Platform data usage rules)](https://opendata.cwa.gov.tw/about/rules)
 - **Bundled as 內建檔案**: `app/src/main/assets/A-A0087-001.csv` (unmodified 未經修改)
 
-The dataset provides the Gregorian–lunar date conversion, ROC year, and the year's sexagenary name. The day's stem-branch (日干支), zodiac animal (生肖), clash (沖), sha direction (煞), moon phase (月相) and festival dates (節日) are derived by this app according to traditional rules or an astronomical formula; they are not provided or endorsed by the Central Weather Administration.
+The dataset provides the Gregorian–lunar date conversion, ROC year, and the year's sexagenary name. The day's stem-branch (日干支), zodiac animal (生肖), clash (沖), sha direction (煞), moon phase (月相), solar terms (節氣) and festival dates (節日) are derived by this app according to traditional rules or an astronomical formula; they are not provided or endorsed by the Central Weather Administration.
 
-此資料集提供國曆與農曆日期對照、民國年及歲次干支。日干支、生肖、沖、煞、月相與節日日期由本程式依傳統規則或天文公式推算，並非中央氣象署提供或認可。
+此資料集提供國曆與農曆日期對照、民國年及歲次干支。日干支、生肖、沖、煞、月相、節氣與節日日期由本程式依傳統規則或天文公式推算，並非中央氣象署提供或認可。
 
 ### 漢族傳統節日 (Wikipedia)
 
