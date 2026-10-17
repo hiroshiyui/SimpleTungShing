@@ -1,0 +1,8 @@
+Hello, this is my very first release!
+
+* A home-screen widget with today's Gregorian and lunar dates, 干支, 生肖 and 沖煞
+* Solar terms, traditional festivals and the moon phase
+* Solid, gradient or glass-style backgrounds with adjustable transparency and layout
+* An app to browse any date from 2022 to 2050
+* English and 台灣漢語 interfaces
+* Fully offline, using CWA open data
