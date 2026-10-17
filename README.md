@@ -1,8 +1,29 @@
+<p align="center"><img src="fastlane/metadata/android/en-US/images/icon.png" alt="Simple Tung Shing icon" width="128"></p>
+
 # Simple Tung Shing 簡易農民曆
 
 A simple Tung Shing (農民曆／黃曆／通書) home-screen widget and companion app for Android.
 
 一個簡單的 Android 農民曆（黃曆／通書）桌面小工具與隨附程式。
+
+## Screenshots 螢幕截圖
+
+The widget in its solid, gradient and glass styles, on 重陽節:
+
+小工具的純色、漸層與玻璃質感樣式（重陽節當天）：
+
+<p align="center"><img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/3.png" alt="Widget in solid, gradient and glass styles" width="720"></p>
+
+The app in 台灣漢語 and English: the day's almanac, and the widget and language settings.
+
+程式的台灣漢語與英文介面：當日農民曆，以及小工具外觀與語言設定。
+
+<p align="center">
+  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/1.png" alt="Almanac screen in 台灣漢語" width="200">
+  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/2.png" alt="Settings in 台灣漢語" width="200">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Almanac screen in English" width="200">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Settings in English" width="200">
+</p>
 
 ## Features 功能
 
