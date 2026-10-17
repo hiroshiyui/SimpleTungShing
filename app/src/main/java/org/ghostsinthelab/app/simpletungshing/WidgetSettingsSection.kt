@@ -1,0 +1,120 @@
+package org.ghostsinthelab.app.simpletungshing
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import org.ghostsinthelab.app.simpletungshing.data.MoonMethod
+import org.ghostsinthelab.app.simpletungshing.widget.BackgroundStyle
+import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
+import kotlin.math.roundToInt
+
+@Composable
+fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -> Unit) {
+    // Follow the slider locally while dragging; save once it is released.
+    var dragging by remember { mutableStateOf<Float?>(null) }
+    val opacity = dragging ?: settings.opacity
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.titleMedium)
+
+            Label(stringResource(R.string.settings_background))
+            Choices(
+                options = listOf(
+                    BackgroundStyle.SOLID to stringResource(R.string.style_solid),
+                    BackgroundStyle.GRADIENT to stringResource(R.string.style_gradient),
+                    BackgroundStyle.GLASS to stringResource(R.string.style_glass),
+                ),
+                selected = settings.style,
+                onSelect = { onChange(settings.copy(style = it)) },
+            )
+            if (settings.style == BackgroundStyle.GLASS) Note(stringResource(R.string.style_glass_note))
+
+            Label(stringResource(R.string.settings_opacity, (opacity * 100).roundToInt()))
+            Slider(
+                value = opacity,
+                onValueChange = { dragging = it },
+                onValueChangeFinished = {
+                    dragging?.let { onChange(settings.copy(opacity = it)) }
+                    dragging = null
+                },
+                steps = 19,
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Label(stringResource(R.string.settings_show_moon))
+                Switch(
+                    checked = settings.showMoon,
+                    onCheckedChange = { onChange(settings.copy(showMoon = it)) },
+                )
+            }
+
+            Label(stringResource(R.string.settings_moon_method))
+            Choices(
+                options = listOf(
+                    MoonMethod.LUNAR_DAY to stringResource(R.string.moon_method_lunar),
+                    MoonMethod.ASTRONOMICAL to stringResource(R.string.moon_method_astronomical),
+                ),
+                selected = settings.moonMethod,
+                onSelect = { onChange(settings.copy(moonMethod = it)) },
+            )
+            Note(
+                stringResource(
+                    when (settings.moonMethod) {
+                        MoonMethod.LUNAR_DAY -> R.string.moon_method_lunar_note
+                        MoonMethod.ASTRONOMICAL -> R.string.moon_method_astronomical_note
+                    },
+                ),
+            )
+        }
+    }
+}
+
+@Composable
+private fun <T> Choices(options: List<Pair<T, String>>, selected: T, onSelect: (T) -> Unit) {
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+        options.forEachIndexed { index, (value, label) ->
+            SegmentedButton(
+                selected = value == selected,
+                onClick = { onSelect(value) },
+                shape = SegmentedButtonDefaults.itemShape(index, options.size),
+            ) { Text(label) }
+        }
+    }
+}
+
+@Composable
+private fun Label(text: String) {
+    Text(text, style = MaterialTheme.typography.bodyLarge)
+}
+
+@Composable
+private fun Note(text: String) {
+    Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+}

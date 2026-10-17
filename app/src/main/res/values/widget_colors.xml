@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light, fixed palette (Material 3 baseline) before Android 12. -->
+    <color name="widget_solid">#FFF3EDF7</color>
+    <color name="widget_gradient_start">#FFEADDFF</color>
+    <color name="widget_gradient_end">#FFFFD8E4</color>
+    <color name="widget_glass_start">#FFFFFFFF</color>
+    <color name="widget_glass_end">#FFE8DEF8</color>
+    <color name="widget_glass_sheen">#80FFFFFF</color>
+    <color name="widget_glass_edge">#B3FFFFFF</color>
+</resources>

@@ -2,6 +2,8 @@ package org.ghostsinthelab.app.simpletungshing.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -11,6 +13,9 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.Image
+import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -24,8 +29,13 @@ import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
+import androidx.glance.layout.ContentScale
+import androidx.glance.layout.Row
+import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
+import androidx.glance.layout.size
+import androidx.glance.layout.width
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.FontWeight
@@ -33,10 +43,13 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.ghostsinthelab.app.simpletungshing.MainActivity
+import org.ghostsinthelab.app.simpletungshing.R
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
+import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
 import java.time.LocalDate
 
 class TungShingWidget : GlanceAppWidget() {
@@ -47,24 +60,32 @@ class TungShingWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val calendar = withContext(Dispatchers.IO) { CalendarData.get(context) }
+        val settingsFlow = WidgetSettings.flow(context)
+        val initialSettings = settingsFlow.first()
         provideContent {
             // Reading the refresh stamp makes a running session recompose on refresh(),
             // so the date below is re-read after midnight.
             currentState<Preferences>()[REFRESHED_AT]
+            val settings by settingsFlow.collectAsState(initialSettings)
             GlanceTheme {
-                Content(LocalDate.now(), calendar)
+                Content(LocalDate.now(), calendar, settings)
             }
         }
     }
 
     @Composable
-    private fun Content(today: LocalDate, calendar: CalendarData) {
+    private fun Content(today: LocalDate, calendar: CalendarData, settings: WidgetSettings) {
         val lunar = calendar.lookup(today)
         val full = LocalSize.current.height >= FULL.height
+        val moon = if (settings.showMoon) MoonPhase.of(settings.moonMethod, today, lunar) else null
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(GlanceTheme.colors.widgetBackground)
+                .background(
+                    ImageProvider(backgroundOf(settings.style)),
+                    alpha = settings.opacity,
+                    contentScale = ContentScale.FillBounds,
+                )
                 .cornerRadius(16.dp)
                 .padding(12.dp)
                 .clickable(actionStartActivity<MainActivity>()),
@@ -75,14 +96,20 @@ class TungShingWidget : GlanceAppWidget() {
                 "${today.year}年${today.monthValue}月 ${Almanac.weekdayName(today.dayOfWeek)}",
                 13.sp, GlanceTheme.colors.onSurfaceVariant,
             )
-            Text(
-                text = today.dayOfMonth.toString(),
-                style = TextStyle(
-                    fontSize = if (full) 52.sp else 40.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = GlanceTheme.colors.primary,
-                ),
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = today.dayOfMonth.toString(),
+                    style = TextStyle(
+                        fontSize = if (full) 52.sp else 40.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = GlanceTheme.colors.primary,
+                    ),
+                )
+                if (moon != null) {
+                    Spacer(GlanceModifier.width(8.dp))
+                    Moon(moon, if (full) 32 else 24)
+                }
+            }
             if (lunar == null) {
                 Line("超出資料範圍", 13.sp, GlanceTheme.colors.onSurface)
                 return@Column
@@ -99,6 +126,22 @@ class TungShingWidget : GlanceAppWidget() {
                 )
             }
         }
+    }
+
+    @Composable
+    private fun Moon(phase: MoonPhase, sizeDp: Int) {
+        val density = LocalContext.current.resources.displayMetrics.density
+        Image(
+            provider = ImageProvider(moonBitmap(phase, (sizeDp * density).toInt())),
+            contentDescription = phase.name,
+            modifier = GlanceModifier.size(sizeDp.dp),
+        )
+    }
+
+    private fun backgroundOf(style: BackgroundStyle): Int = when (style) {
+        BackgroundStyle.SOLID -> R.drawable.widget_bg_solid
+        BackgroundStyle.GRADIENT -> R.drawable.widget_bg_gradient
+        BackgroundStyle.GLASS -> R.drawable.widget_bg_glass
     }
 
     @Composable
