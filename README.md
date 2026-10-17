@@ -25,6 +25,22 @@ The app in 台灣漢語 and English: the day's almanac, and the widget and langu
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Settings in English" width="200">
 </p>
 
+## Download 下載
+
+Download the latest APK from [GitHub Releases](https://github.com/hiroshiyui/SimpleTungShing/releases/latest). Pick `simpletungshing_v<version>-release.apk`; the `-debug.apk` is meant for testing. The app needs Android 8.0 or later. Android may ask you to allow installing apps from your browser or file manager the first time.
+
+請您從 [GitHub Releases](https://github.com/hiroshiyui/SimpleTungShing/releases/latest) 下載最新的 APK，選擇 `simpletungshing_v<版本>-release.apk`；`-debug.apk` 供測試使用。本程式需要 Android 8.0 以上版本。首次安裝時，Android 可能會請您允許瀏覽器或檔案管理程式安裝應用程式。
+
+Each APK comes with a GPG signature (`.asc`), made with signing subkey `D54140C87FC19931` of the key with fingerprint `37A4 5B21 B45E A42E BE6C E74C 9F35 3471 AF05 D276`. To verify a download:
+
+每個 APK 都附有 GPG 簽章（`.asc`），由指紋為 `37A4 5B21 B45E A42E BE6C E74C 9F35 3471 AF05 D276` 之金鑰的簽署子金鑰 `D54140C87FC19931` 簽署。驗證方式如下：
+
+```bash
+gpg --recv-keys 37A45B21B45EA42EBE6CE74C9F353471AF05D276
+# or: curl -s https://github.com/hiroshiyui.gpg | gpg --import
+gpg --verify simpletungshing_v1.0.1-release.apk.asc simpletungshing_v1.0.1-release.apk
+```
+
 ## Features 功能
 
 - **Home-screen widget** showing today's Gregorian date and weekday, lunar date (including leap months), the year's sexagenary name and zodiac animal, the day's sexagenary stem-branch, and its clash and sha direction. The widget updates itself shortly after local midnight and when the system time or time zone changes. On smaller sizes, only the date lines are shown.
