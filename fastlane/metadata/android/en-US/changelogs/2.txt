@@ -1,0 +1,3 @@
+Hello again! A small but thoughtful update:
+
+* My calendar data from CWA covers up to 2050-12-31. If that day ever passes, I'll stop showing the almanac and kindly tell you the data has run out, so I never show you anything I can't back up. Please update me then for newer data.
