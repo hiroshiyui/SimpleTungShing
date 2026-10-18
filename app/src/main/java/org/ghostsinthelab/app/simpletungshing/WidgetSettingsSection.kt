@@ -41,6 +41,7 @@ fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.titleMedium)
+            WidgetPreview()
             AddWidgetButton()
 
             Label(stringResource(R.string.settings_background))
