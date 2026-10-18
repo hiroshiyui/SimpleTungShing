@@ -16,6 +16,7 @@ Make the widget your own:
 
 * Solid, gradient or glass-style background, following your wallpaper colors on Android 12 and later
 * Adjustable transparency, margin, padding and text alignment
+* A live preview in my settings shows the widget as you change it, and a button adds it to your home screen in one tap
 * I refresh myself just after midnight, and when the time, time zone or language changes
 
 My interface speaks English and 台灣漢語 (Taiwanese Mandarin). I follow your system language, and on Android 13 and later you can also choose a language in my settings. The almanac content itself stays in Han script (漢文).
