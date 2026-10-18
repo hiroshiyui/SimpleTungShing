@@ -20,9 +20,9 @@ The app in 台灣漢語 and English: the day's almanac, and the widget and langu
 
 <p align="center">
   <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/1.png" alt="Almanac screen in 台灣漢語" width="200">
-  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/2.png" alt="Settings in 台灣漢語" width="200">
+  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/2.png" alt="Widget preview and settings in 台灣漢語" width="200">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Almanac screen in English" width="200">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Settings in English" width="200">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Widget preview and settings in English" width="200">
 </p>
 
 ## Download 下載
