@@ -1,0 +1,5 @@
+Hi! This update makes setting me up on your home screen easier:
+
+* In my settings you can now see a live preview of the widget as you change its look.
+* A new button adds the widget to your home screen right from the app.
+* Fixed: after an update, the widget could stay stuck on its loading spinner for hours. It now refreshes as soon as you open the app.
