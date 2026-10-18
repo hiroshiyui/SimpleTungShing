@@ -1,5 +1,7 @@
 package org.ghostsinthelab.app.simpletungshing.widget
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -219,10 +221,18 @@ class TungShingWidget : GlanceAppWidget() {
         /** Re-renders every placed widget so it picks up the current date. */
         suspend fun refreshAll(context: Context) {
             val widget = TungShingWidget()
-            GlanceAppWidgetManager(context).getGlanceIds(TungShingWidget::class.java).forEach { id ->
-                updateAppWidgetState(context, id) { it[REFRESHED_AT] = System.currentTimeMillis() }
-                widget.update(context, id)
-            }
+            val glance = GlanceAppWidgetManager(context)
+            // Ask the platform rather than GlanceAppWidgetManager.getGlanceIds, which looks the
+            // widget up by its class name as stored at the last render: R8 renames the class
+            // between builds, so after an upgrade that lookup finds nothing until the launcher
+            // sends its own update, leaving the widget on its loading layout.
+            AppWidgetManager.getInstance(context)
+                .getAppWidgetIds(ComponentName(context, TungShingWidgetReceiver::class.java))
+                .map(glance::getGlanceIdBy)
+                .forEach { id ->
+                    updateAppWidgetState(context, id) { it[REFRESHED_AT] = System.currentTimeMillis() }
+                    widget.update(context, id)
+                }
         }
     }
 }
