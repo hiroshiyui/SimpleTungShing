@@ -1,11 +1,14 @@
 package org.ghostsinthelab.app.simpletungshing
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -20,11 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.ghostsinthelab.app.simpletungshing.data.MoonMethod
 import org.ghostsinthelab.app.simpletungshing.widget.BackgroundStyle
 import org.ghostsinthelab.app.simpletungshing.widget.ContentAlignment
+import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
 import kotlin.math.roundToInt
 
@@ -36,6 +41,7 @@ fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.titleMedium)
+            AddWidgetButton()
 
             Label(stringResource(R.string.settings_background))
             Choices(
@@ -112,6 +118,20 @@ fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -
             )
         }
     }
+}
+
+/** Asks the launcher to pin the widget; hidden when the launcher does not support pinning. */
+@Composable
+private fun AddWidgetButton() {
+    val context = LocalContext.current
+    val manager = remember(context) { context.getSystemService(AppWidgetManager::class.java) }
+    if (manager?.isRequestPinAppWidgetSupported != true) return
+    FilledTonalButton(
+        onClick = {
+            manager.requestPinAppWidget(ComponentName(context, TungShingWidgetReceiver::class.java), null, null)
+        },
+        modifier = Modifier.fillMaxWidth(),
+    ) { Text(stringResource(R.string.add_widget)) }
 }
 
 /** A slider that follows the thumb locally while dragging and saves once released. */
