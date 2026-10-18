@@ -28,30 +28,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.glance.ExperimentalGlanceApi
-import androidx.glance.appwidget.runComposition
+import androidx.glance.appwidget.compose
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidget
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
+import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
+import java.io.File
 
 /** About a 2×2-cell widget, used until one is placed. */
 private val DEFAULT_SIZE = DpSize(180.dp, 180.dp)
 
 /**
- * The real widget, rendered off-screen by Glance and inflated here. Its composition collects
- * [org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings] itself, so it re-emits on
- * every saved change.
+ * The real widget, rendered off-screen by Glance and inflated here. It is composed once per
+ * [settings] change rather than kept running, since the composition reads the saved settings
+ * when it starts.
  */
 @OptIn(ExperimentalGlanceApi::class)
 @Composable
-fun WidgetPreview(modifier: Modifier = Modifier) {
+fun WidgetPreview(settings: WidgetSettings, modifier: Modifier = Modifier) {
     val context = LocalContext.current.applicationContext
     val portrait = LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE
     val size = remember(portrait) { placedSize(context, portrait) ?: DEFAULT_SIZE }
-    val views by produceState<RemoteViews?>(null, size) {
+    val views by produceState<RemoteViews?>(null, size, settings) {
         // Empty state rather than loading it for the fake preview id, which would leave a
         // state file behind.
-        TungShingWidget()
-            .runComposition(context, sizes = listOf(size), state = emptyPreferences())
-            .collect { value = it }
+        value = TungShingWidget().compose(context, size = size, state = emptyPreferences())
+        withContext(Dispatchers.IO) { deletePreviewLayouts(context) }
     }
     Box(
         modifier = modifier
@@ -88,6 +91,16 @@ private fun placedSize(context: Context, portrait: Boolean): DpSize? {
         if (portrait) AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT else AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
     )
     return if (width > 0 && height > 0) DpSize(width.dp, height.dp) else null
+}
+
+/**
+ * Glance saves a layout file for every widget id it composes, including the random negative id
+ * each preview gets, and only deletes those of real widgets.
+ */
+private fun deletePreviewLayouts(context: Context) {
+    File(context.filesDir, "datastore")
+        .listFiles { file -> file.name.startsWith("appWidgetLayout--") }
+        ?.forEach { it.delete() }
 }
 
 /** Swallows taps so the widget's own click action (open the app) does not fire in the preview. */
