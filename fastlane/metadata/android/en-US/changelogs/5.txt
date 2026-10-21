@@ -1,0 +1,4 @@
+Hi! This update teaches me more of the traditional almanac:
+
+* Each day now shows its fortune (吉凶), what it is suitable and unsuitable for (宜忌), and its auspicious hours (吉時), worked out by the traditional 建除 and 黃道黑道 rules. They are folk tradition, not prediction, and may differ from a printed almanac.
+* The day's details are now separated by faint lines, so they are easier to read at a glance.
