@@ -80,17 +80,21 @@ fun WidgetPreview(settings: WidgetSettings, modifier: Modifier = Modifier) {
  * height in portrait, the reverse in landscape.
  */
 private fun placedSize(context: Context, portrait: Boolean): DpSize? {
-    val manager = AppWidgetManager.getInstance(context)
-    val id = manager.getAppWidgetIds(ComponentName(context, TungShingWidgetReceiver::class.java))
-        .firstOrNull() ?: return null
-    val options = manager.getAppWidgetOptions(id)
-    val width = options.getInt(
-        if (portrait) AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH else AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
-    )
-    val height = options.getInt(
-        if (portrait) AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT else AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-    )
-    return if (width > 0 && height > 0) DpSize(width.dp, height.dp) else null
+    return try {
+        val manager = AppWidgetManager.getInstance(context)
+        val id = manager.getAppWidgetIds(ComponentName(context, TungShingWidgetReceiver::class.java))
+            .firstOrNull() ?: return null
+        val options = manager.getAppWidgetOptions(id)
+        val width = options.getInt(
+            if (portrait) AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH else AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+        )
+        val height = options.getInt(
+            if (portrait) AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT else AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+        )
+        if (width > 0 && height > 0) DpSize(width.dp, height.dp) else null
+    } catch (_: Throwable) {
+        null
+    }
 }
 
 /**

@@ -14,6 +14,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -29,8 +30,15 @@ private val LANGUAGES = listOf("" to R.string.language_system, "en-US" to R.stri
 @RequiresApi(33)
 @Composable
 fun LanguageSection() {
-    val localeManager = LocalContext.current.getSystemService(LocaleManager::class.java)
-    val current = localeManager.applicationLocales.toLanguageTags()
+    val context = LocalContext.current
+    val localeManager = remember {
+        try {
+            context.getSystemService(LocaleManager::class.java)
+        } catch (_: Throwable) {
+            null
+        }
+    }
+    val current = localeManager?.applicationLocales?.toLanguageTags() ?: ""
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -41,7 +49,7 @@ fun LanguageSection() {
                 LANGUAGES.forEachIndexed { index, (tag, label) ->
                     SegmentedButton(
                         selected = tag == current,
-                        onClick = { localeManager.applicationLocales = LocaleList.forLanguageTags(tag) },
+                        onClick = { localeManager?.applicationLocales = LocaleList.forLanguageTags(tag) },
                         shape = SegmentedButtonDefaults.itemShape(index, LANGUAGES.size),
                     ) { Text(stringResource(label)) }
                 }

@@ -125,7 +125,13 @@ fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -
 @Composable
 private fun AddWidgetButton() {
     val context = LocalContext.current
-    val manager = remember(context) { context.getSystemService(AppWidgetManager::class.java) }
+    val manager = remember(context) {
+        try {
+            context.getSystemService(AppWidgetManager::class.java)
+        } catch (_: Throwable) {
+            null
+        }
+    }
     if (manager?.isRequestPinAppWidgetSupported != true) return
     FilledTonalButton(
         onClick = {
