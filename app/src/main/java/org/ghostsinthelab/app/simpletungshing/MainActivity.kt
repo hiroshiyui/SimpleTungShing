@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
@@ -273,15 +274,27 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
                 return@Column
             }
             DetailRow(stringResource(R.string.label_lunar), Almanac.lunarDateName(lunar, withSize = true))
-            SolarTerms.termOn(date)?.let { DetailRow(stringResource(R.string.label_solar_term), it) }
-            Festivals.on(date, calendar).takeIf { it.isNotEmpty() }?.let { FestivalRow(it) }
+            SolarTerms.termOn(date)?.let {
+                RowDivider()
+                DetailRow(stringResource(R.string.label_solar_term), it)
+            }
+            Festivals.on(date, calendar).takeIf { it.isNotEmpty() }?.let {
+                RowDivider()
+                FestivalRow(it)
+            }
+            RowDivider()
             DetailRow(
                 stringResource(R.string.label_year),
                 "${lunar.yearGanZhi}年 · 生肖${Almanac.zodiacOf(lunar.yearGanZhi)}",
             )
+            RowDivider()
             DetailRow(stringResource(R.string.label_day_ganzhi), "${Almanac.dayGanZhi(date)}日")
+            RowDivider()
             DetailRow(stringResource(R.string.label_chong_sha), "${Almanac.chong(date)} ${Almanac.sha(date)}")
-            MoonPhase.of(settings.moonMethod, date, lunar)?.let { MoonRow(it) }
+            MoonPhase.of(settings.moonMethod, date, lunar)?.let {
+                RowDivider()
+                MoonRow(it)
+            }
             AuspiciousRows(remember(date) { Auspicious.of(date) })
         }
     }
@@ -290,13 +303,26 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
 /** 吉凶 (建除 and 黃道／黑道), 宜忌 and 吉時, all app-derived. */
 @Composable
 private fun AuspiciousRows(day: Auspicious.Day) {
-    Spacer(Modifier.height(8.dp))
+    RowDivider()
     DetailRow(stringResource(R.string.label_fortune), "${day.jianChu}日 · ${day.deity}（${day.daoName}）")
+    RowDivider()
     WrappingRow(stringResource(R.string.label_suitable), day.suitable.joinToString("、"))
+    RowDivider()
     WrappingRow(stringResource(R.string.label_unsuitable), day.unsuitable.joinToString("、"))
+    RowDivider()
     WrappingRow(
         stringResource(R.string.label_auspicious_hours),
         day.auspiciousHours.joinToString("\n") { "${it.ganZhi}時 ${it.span} ${it.deity}" },
+    )
+}
+
+/** A faint rule between the detail rows of the day card. */
+@Composable
+private fun RowDivider() {
+    HorizontalDivider(
+        modifier = Modifier.padding(vertical = 2.dp),
+        thickness = 0.5.dp,
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
     )
 }
 
