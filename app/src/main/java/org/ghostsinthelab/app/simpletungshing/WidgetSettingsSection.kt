@@ -2,6 +2,8 @@ package org.ghostsinthelab.app.simpletungshing
 
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,15 +19,22 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import org.ghostsinthelab.app.simpletungshing.data.MoonMethod
 import org.ghostsinthelab.app.simpletungshing.widget.BackgroundStyle
 import org.ghostsinthelab.app.simpletungshing.widget.ContentAlignment
@@ -133,11 +142,26 @@ private fun AddWidgetButton() {
         }
     }
     if (manager?.isRequestPinAppWidgetSupported != true) return
+    val interactionSource = remember { MutableInteractionSource() }
+    var size by remember { mutableStateOf(IntSize.Zero) }
+    // This section enters composition each time the Widget tab is opened: ripple once
+    // from the center to draw the eye to the button.
+    LaunchedEffect(Unit) {
+        val measured = snapshotFlow { size }.first { it != IntSize.Zero }
+        delay(300)
+        val press = PressInteraction.Press(Offset(measured.width / 2f, measured.height / 2f))
+        interactionSource.emit(press)
+        delay(600)
+        interactionSource.emit(PressInteraction.Release(press))
+    }
     FilledTonalButton(
         onClick = {
             manager.requestPinAppWidget(ComponentName(context, TungShingWidgetReceiver::class.java), null, null)
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .onSizeChanged { size = it },
+        interactionSource = interactionSource,
     ) { Text(stringResource(R.string.add_widget)) }
 }
 
