@@ -3,7 +3,6 @@ package org.ghostsinthelab.app.simpletungshing.widget
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,7 +23,7 @@ import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
-import androidx.glance.appwidget.action.actionStartActivity
+import androidx.glance.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
@@ -117,11 +116,7 @@ class TungShingWidget : GlanceAppWidget() {
                 )
                 .cornerRadius(16.dp)
                 .padding(settings.paddingDp.dp)
-                .clickable(
-                    actionStartActivity(
-                        Intent(context, MainActivity::class.java).putExtra(MainActivity.EXTRA_SHOW_TODAY, true),
-                    ),
-                ),
+                .clickable(actionStartActivity<MainActivity>()),
             horizontalAlignment = when (settings.alignment) {
                 ContentAlignment.START -> Alignment.Start
                 ContentAlignment.CENTER -> Alignment.CenterHorizontally

@@ -1,6 +1,5 @@
 package org.ghostsinthelab.app.simpletungshing
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,8 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -37,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -88,22 +84,8 @@ import kotlin.math.roundToInt
 
 
 class MainActivity : ComponentActivity() {
-    companion object {
-        /** Boolean extra: open the almanac tab on today and scroll to the day card (sent by the widget). */
-        const val EXTRA_SHOW_TODAY = "show_today"
-    }
-
-    /** Incremented for each intent carrying [EXTRA_SHOW_TODAY], so the screen reacts to every widget tap. */
-    private var showTodayRequest by mutableIntStateOf(0)
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        if (intent.getBooleanExtra(EXTRA_SHOW_TODAY, false)) showTodayRequest++
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null && intent.getBooleanExtra(EXTRA_SHOW_TODAY, false)) showTodayRequest++
         TungShingWidgetReceiver.scheduleMidnightRefresh(this)
         // Also catches a language chosen while the app was not running.
         if (savedInstanceState == null) lifecycleScope.launch { TungShingWidget.refreshAll(applicationContext) }
@@ -127,7 +109,6 @@ class MainActivity : ComponentActivity() {
                             settings = currentSettings,
                             onSettingsChange = { scope.launch { WidgetSettings.save(applicationContext, it) } },
                             modifier = Modifier.padding(innerPadding),
-                            showTodayRequest = showTodayRequest,
                         )
                     }
                 }
@@ -162,8 +143,6 @@ fun AlmanacScreen(
     settings: WidgetSettings,
     onSettingsChange: (WidgetSettings) -> Unit,
     modifier: Modifier = Modifier,
-    /** Each change (other than to 0) shows today's day card on the almanac tab. */
-    showTodayRequest: Int = 0,
 ) {
     var epochDay by rememberSaveable { mutableLongStateOf(LocalDate.now().toEpochDay()) }
     var picking by rememberSaveable { mutableStateOf(false) }
@@ -179,15 +158,6 @@ fun AlmanacScreen(
     val widgetScroll = rememberScrollState()
     val settingsScroll = rememberScrollState()
     val date = LocalDate.ofEpochDay(epochDay)
-    val dayCardRequester = remember { BringIntoViewRequester() }
-    var pendingScroll by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(showTodayRequest) {
-        if (showTodayRequest == 0) return@LaunchedEffect
-        tab = 0
-        epochDay = LocalDate.now().toEpochDay()
-        pendingScroll = true
-    }
 
     Column(modifier = modifier.fillMaxSize()) {
         PrimaryTabRow(selectedTabIndex = tab) {
@@ -204,14 +174,7 @@ fun AlmanacScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 MonthCard(date, calendar, onSelect = { epochDay = it.toEpochDay() })
-                DayCard(date, calendar, settings, Modifier.bringIntoViewRequester(dayCardRequester))
-                if (pendingScroll) {
-                    // Runs once the day card is laid out on the almanac tab, then clears the request.
-                    LaunchedEffect(Unit) {
-                        dayCardRequester.bringIntoView()
-                        pendingScroll = false
-                    }
-                }
+                DayCard(date, calendar, settings)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -272,14 +235,9 @@ fun AlmanacScreen(
 }
 
 @Composable
-private fun DayCard(
-    date: LocalDate,
-    calendar: CalendarData,
-    settings: WidgetSettings,
-    modifier: Modifier = Modifier,
-) {
+private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSettings) {
     val lunar = calendar.lookup(date)
-    Card(modifier = modifier.fillMaxWidth()) {
+    Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
