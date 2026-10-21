@@ -30,6 +30,10 @@
     <string name="label_solar_term">Solar term</string>
     <string name="label_festivals">Festivals</string>
     <string name="label_moon_phase">Moon phase</string>
+    <string name="label_fortune">Fortune</string>
+    <string name="label_suitable">Suitable</string>
+    <string name="label_unsuitable">Unsuitable</string>
+    <string name="label_auspicious_hours">Auspicious hours</string>
     <string name="moon_phase_value">%1$s (about %2$d%% lit)</string>
     <string name="settings_title">Widget appearance</string>
     <string name="add_widget">Add widget to home screen</string>
@@ -58,5 +62,5 @@
     <string name="moon_method_astronomical_note">Computed from the positions of the moon and sun at local noon; works for any date.</string>
     <string name="attribution_data"><![CDATA[Data source: <a href="https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001">Central Weather Administration (交通部中央氣象署) open data 「日曆資料-國農曆對照」</a> (A-A0087-001), used in accordance with the <a href="https://opendata.cwa.gov.tw/about/rules">CWA Open Data Platform data usage rules</a>.]]></string>
     <string name="attribution_festivals"><![CDATA[Festival names follow the Wikipedia article <a href="https://zh.wikipedia.org/zh-tw/漢族傳統節日">「漢族傳統節日」</a> (CC BY-SA 4.0).]]></string>
-    <string name="attribution_derived">The day stem-branch, clash and sha, moon phase, solar terms and festivals are derived by this app from traditional rules or astronomical formulas; they are not provided by the Central Weather Administration.</string>
+    <string name="attribution_derived">The day stem-branch, clash and sha, moon phase, solar terms, festivals, fortune, suitable and unsuitable activities and auspicious hours are derived by this app from traditional rules or astronomical formulas; they are not provided by the Central Weather Administration. The fortune, 宜忌 and 吉時 follow a simplified reading of the 建除 and 黃道黑道 systems, so a published almanac may differ; they are folk tradition, not prediction.</string>
 </resources>

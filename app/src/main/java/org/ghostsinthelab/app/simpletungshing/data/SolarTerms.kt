@@ -29,6 +29,7 @@ object SolarTerms {
 
     private val ZONE: ZoneId = ZoneId.of("Asia/Taipei")
     private val termsByYear = ConcurrentHashMap<Int, Map<LocalDate, String>>()
+    private val jieByYear = ConcurrentHashMap<Int, List<Pair<LocalDate, Int>>>()
     private const val TROPICAL_YEAR = 365.2422
     private const val MILLIS_PER_DAY = 86_400_000.0
 
@@ -37,6 +38,19 @@ object SolarTerms {
         termsByYear.getOrPut(date.year) {
             NAMES.withIndex().associate { (i, name) -> dateOf(date.year, i * 15.0) to name }
         }[date]
+
+    /**
+     * The 月建 of [date], the earthly branch (0 = 子 … 11 = 亥) of the solar
+     * month, which changes on each 節 (小寒 → 丑, 立春 → 寅, … 大雪 → 子),
+     * starting on the day of the term itself.
+     */
+    fun monthBranch(date: LocalDate): Int {
+        val jie = jieByYear.getOrPut(date.year) {
+            // 小寒 (285°) starts 丑, then every 30° starts the next branch.
+            (0 until 12).map { i -> dateOf(date.year, (285.0 + 30 * i) % 360) to (i + 1) % 12 }
+        }
+        return jie.lastOrNull { (day, _) -> !day.isAfter(date) }?.second ?: 0 // before 小寒: still 子月
+    }
 
     /** The date in [year] on which the sun reaches [longitude] degrees. */
     fun dateOf(year: Int, longitude: Double): LocalDate {

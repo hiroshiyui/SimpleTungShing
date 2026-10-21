@@ -48,6 +48,7 @@ gpg --verify simpletungshing_v1.0.1-release.apk.asc simpletungshing_v1.0.1-relea
 - **Solar terms** (節氣), such as 立春 and 霜降, shown on their day.
 - **Festivals and observances** (節日) from the Han traditional and religious calendars, such as 春節, 清明節, 端午節, 中秋節 and 天后誕, shown on the widget and in the app.
 - **Moon phase**, derived either from the lunar day (初一 as new moon) or by astronomical calculation; you pick the method.
+- **Fortune, 宜忌 and 吉時** in the app: the day's 建除 value and 黃道／黑道 deity, the activities traditionally suited or unsuited to that 建除 value, and the auspicious double hours with their 干支 and clock span.
 - **Companion app** for browsing any date in the dataset range, from a month calendar that marks each day's lunar date and solar term, by stepping day by day, or by picking a date. It also shows the ROC year and whether the lunar month is long or short. The widget's look is set on its own Widget tab, and the language on the Settings tab.
 - **English and Taiwanese Mandarin (台灣漢語)** interfaces, following the system language by default; on Android 13+ you can also pick the language in the app. Almanac content stays in Han script (漢文).
 - **Offline and private**: all data is bundled with the app. It has no internet permission, asks for no runtime permissions and collects nothing; the only permissions are the standard install-time ones WorkManager uses to update the widget.
@@ -57,6 +58,7 @@ gpg --verify simpletungshing_v1.0.1-release.apk.asc simpletungshing_v1.0.1-relea
 - **節氣**：在節氣當天顯示名稱，例如立春、霜降。
 - **節日**：在小工具與程式中顯示漢族傳統節日與宗教節日，例如春節、清明節、端午節、中秋節、天后誕等。
 - **月相**：可選擇依農曆日期（以初一為新月）推估，或以天文公式計算。
+- **吉凶、宜忌與吉時**：程式中顯示當天的建除十二神與黃道黑道十二神、該建除日傳統上宜做與忌做的事，以及吉時的時辰干支與時間。
 - **隨附程式**：可從標示農曆日期與節氣的月曆點選、逐日切換或選擇日期，瀏覽資料範圍內任一天的農民曆資訊，並另外顯示民國年與農曆大小月。小工具外觀在「小工具」分頁設定，語言則在「設定」分頁。
 - **介面支援英文與台灣漢語**：預設跟隨系統語言，Android 13 以上也可在程式中自行選擇。農民曆內容維持漢文。
 - **離線、保護隱私**：所有資料皆隨程式內建，沒有網路權限，不要求任何執行階段權限，也不收集任何資料；僅帶有 WorkManager 更新小工具所需的標準安裝時權限。
@@ -67,11 +69,11 @@ Solar–lunar date conversion comes from the Central Weather Administration (CWA
 
 The day's stem-branch (日干支), zodiac animal (生肖), clash (沖) and sha direction (煞) are **derived by the app** according to traditional rules, and the moon phase (月相) from the lunar day or an astronomical formula. Festival names and dates follow the Wikipedia article [漢族傳統節日](https://zh.wikipedia.org/zh-tw/漢族傳統節日), using the customary Taiwan date where it lists several; solar terms (節氣), and the festivals tied to them (清明, 冬至, 三伏), are computed by the app. They are not provided or endorsed by CWA. These items are presented as folk custom and tradition, not as fact or prediction.
 
-The dataset does not include daily auspicious/inauspicious activities (宜忌), so the app does not show them.
+The fortune (吉凶), suitable and unsuitable activities (宜忌) and auspicious hours (吉時) are also computed by the app, by the 建除十二神 and 黃道黑道十二神 rules of the《協紀辨方書》tradition: the solar month changes on each 節, the day's 建除 value and deity follow from the day branch, and the hour deities from the day branch with 五鼠遁 hour stems, dropping the hour that clashes with the day. The 宜忌 are the activities 通書 commonly attach to each 建除 value. This is a simplified reading without the full 神煞 tables that commercial almanacs add, so a published 農民曆 may differ.
 
 國曆與農曆對照資料來自交通部中央氣象署開放資料「日曆資料-國農曆對照」（[A-A0087-001](https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001)），原樣內建於程式中，涵蓋 **2022-01-01 至 2050-12-31**；超出範圍的日期會顯示提示訊息。
 
-日干支、生肖、沖、煞由**本程式依傳統規則推算**，月相則依農曆日期或天文公式推算，皆非中央氣象署提供或認可。節日名稱與日期參考維基百科[「漢族傳統節日」](https://zh.wikipedia.org/zh-tw/漢族傳統節日)條目，列有多個日期者採臺灣習俗；節氣及與節氣相關的節日（清明、冬至、三伏）由本程式計算。這些內容屬於民俗傳統，僅供參考，並非事實陳述或預測。
+日干支、生肖、沖、煞由**本程式依傳統規則推算**，月相則依農曆日期或天文公式推算，皆非中央氣象署提供或認可。節日名稱與日期參考維基百科[「漢族傳統節日」](https://zh.wikipedia.org/zh-tw/漢族傳統節日)條目，列有多個日期者採臺灣習俗；節氣及與節氣相關的節日（清明、冬至、三伏）由本程式計算。吉凶、宜忌與吉時亦由本程式依《協紀辨方書》一系的建除十二神與黃道黑道十二神規則推算：月建以節氣切換，日的建除與十二神由日支推得，時辰的十二神則由日支起例並以五鼠遁推時干，並排除與日支相沖的時辰；宜忌為通書常見附於各建除日的事項。此為簡化規則，未納入市售農民曆另加的各種神煞，與市售農民曆可能不同。這些內容屬於民俗傳統，僅供參考，並非事實陳述或預測。
 
 此資料集未包含宜忌，因此本程式不顯示此項目。
 

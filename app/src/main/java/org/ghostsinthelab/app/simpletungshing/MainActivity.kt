@@ -65,6 +65,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
+import org.ghostsinthelab.app.simpletungshing.data.Auspicious
 import org.ghostsinthelab.app.simpletungshing.data.Festivals
 import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
 import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
@@ -281,7 +282,36 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
             DetailRow(stringResource(R.string.label_day_ganzhi), "${Almanac.dayGanZhi(date)}日")
             DetailRow(stringResource(R.string.label_chong_sha), "${Almanac.chong(date)} ${Almanac.sha(date)}")
             MoonPhase.of(settings.moonMethod, date, lunar)?.let { MoonRow(it) }
+            AuspiciousRows(remember(date) { Auspicious.of(date) })
         }
+    }
+}
+
+/** 吉凶 (建除 and 黃道／黑道), 宜忌 and 吉時, all app-derived. */
+@Composable
+private fun AuspiciousRows(day: Auspicious.Day) {
+    Spacer(Modifier.height(8.dp))
+    DetailRow(stringResource(R.string.label_fortune), "${day.jianChu}日 · ${day.deity}（${day.daoName}）")
+    WrappingRow(stringResource(R.string.label_suitable), day.suitable.joinToString("、"))
+    WrappingRow(stringResource(R.string.label_unsuitable), day.unsuitable.joinToString("、"))
+    WrappingRow(
+        stringResource(R.string.label_auspicious_hours),
+        day.auspiciousHours.joinToString("\n") { "${it.ganZhi}時 ${it.span} ${it.deity}" },
+    )
+}
+
+/** A label with a value that may wrap or span several lines, aligned to the end. */
+@Composable
+private fun WrappingRow(label: String, value: String) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            value,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.End,
+        )
     }
 }
 

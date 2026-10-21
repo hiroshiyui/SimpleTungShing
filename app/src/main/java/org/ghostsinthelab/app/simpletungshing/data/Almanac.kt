@@ -20,6 +20,15 @@ object Almanac {
     private fun dayCycleIndex(date: LocalDate): Int =
         Math.floorMod(date.toEpochDay() - JIAZI_DAY.toEpochDay(), 60L).toInt()
 
+    /** The day's heavenly stem, 0 = 甲 … 9 = 癸. */
+    fun dayStem(date: LocalDate): Int = dayCycleIndex(date) % 10
+
+    /** The day's earthly branch, 0 = 子 … 11 = 亥. */
+    fun dayBranch(date: LocalDate): Int = dayCycleIndex(date) % 12
+
+    fun stemName(stem: Int): String = STEMS[stem].toString()
+    fun branchName(branch: Int): String = BRANCHES[branch].toString()
+
     /** 日干支, e.g. "甲子". */
     fun dayGanZhi(date: LocalDate): String {
         val i = dayCycleIndex(date)

@@ -30,6 +30,10 @@
     <string name="label_solar_term">節氣</string>
     <string name="label_festivals">節日</string>
     <string name="label_moon_phase">月相</string>
+    <string name="label_fortune">吉凶</string>
+    <string name="label_suitable">宜</string>
+    <string name="label_unsuitable">忌</string>
+    <string name="label_auspicious_hours">吉時</string>
     <string name="moon_phase_value">%1$s（亮面約 %2$d%%）</string>
     <string name="settings_title">小工具外觀</string>
     <string name="add_widget">將小工具加到主畫面</string>
@@ -56,5 +60,5 @@
     <string name="moon_method_astronomical_note">依月球與太陽的位置計算當地正午的月相，不受資料範圍限制。</string>
     <string name="attribution_data"><![CDATA[<a href="https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001">資料來源：交通部中央氣象署「日曆資料-國農曆對照」</a>（A-A0087-001），<a href="https://opendata.cwa.gov.tw/about/rules">依中央氣象署開放資料平臺資料使用規範</a>使用。]]></string>
     <string name="attribution_festivals"><![CDATA[<a href="https://zh.wikipedia.org/zh-tw/漢族傳統節日">節日名稱參考維基百科「漢族傳統節日」條目</a>（CC BY-SA 4.0）。]]></string>
-    <string name="attribution_derived">日干支、沖煞、月相、節氣與節日由本程式依傳統規則或天文公式推算，非中央氣象署提供。</string>
+    <string name="attribution_derived">日干支、沖煞、月相、節氣、節日、吉凶、宜忌與吉時由本程式依傳統規則或天文公式推算，非中央氣象署提供。吉凶、宜忌與吉時採建除與黃道黑道的簡化規則，與市售農民曆可能不同，請當作民俗傳統，而非預測。</string>
 </resources>
