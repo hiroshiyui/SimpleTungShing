@@ -25,14 +25,17 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -44,7 +47,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
@@ -139,40 +144,79 @@ fun AlmanacScreen(
 ) {
     var epochDay by rememberSaveable { mutableLongStateOf(LocalDate.now().toEpochDay()) }
     var picking by rememberSaveable { mutableStateOf(false) }
+    // Settings holds only the language picker, which needs Android 13+.
+    val tabs = listOfNotNull(
+        R.string.tab_almanac,
+        R.string.tab_widget,
+        R.string.tab_settings.takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU },
+    )
+    var tab by rememberSaveable { mutableIntStateOf(0) }
+    // Hoisted so that each tab keeps its scroll position across switches.
+    val almanacScroll = rememberScrollState()
+    val widgetScroll = rememberScrollState()
+    val settingsScroll = rememberScrollState()
     val date = LocalDate.ofEpochDay(epochDay)
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        DayCard(date, calendar, settings)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        ) {
-            OutlinedButton(
-                onClick = { epochDay-- },
-                enabled = date > calendar.firstDate,
-            ) { Text(stringResource(R.string.previous_day)) }
-            OutlinedButton(onClick = { epochDay = LocalDate.now().toEpochDay() }) {
-                Text(stringResource(R.string.today))
+    Column(modifier = modifier.fillMaxSize()) {
+        PrimaryTabRow(selectedTabIndex = tab) {
+            tabs.forEachIndexed { index, title ->
+                Tab(selected = tab == index, onClick = { tab = index }, text = { Text(stringResource(title)) })
             }
-            OutlinedButton(
-                onClick = { epochDay++ },
-                enabled = date < calendar.lastDate,
-            ) { Text(stringResource(R.string.next_day)) }
         }
-        TextButton(
-            onClick = { picking = true },
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-        ) { Text(stringResource(R.string.pick_date)) }
-        WidgetSettingsSection(settings, onSettingsChange)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) LanguageSection()
-        Spacer(Modifier.height(8.dp))
-        Attribution()
+        if (tab == 0) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(almanacScroll)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                MonthCard(date, calendar, onSelect = { epochDay = it.toEpochDay() })
+                DayCard(date, calendar, settings)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                ) {
+                    OutlinedButton(
+                        onClick = { epochDay-- },
+                        enabled = date > calendar.firstDate,
+                    ) { Text(stringResource(R.string.previous_day)) }
+                    OutlinedButton(onClick = { epochDay = LocalDate.now().toEpochDay() }) {
+                        Text(stringResource(R.string.today))
+                    }
+                    OutlinedButton(
+                        onClick = { epochDay++ },
+                        enabled = date < calendar.lastDate,
+                    ) { Text(stringResource(R.string.next_day)) }
+                }
+                TextButton(
+                    onClick = { picking = true },
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                ) { Text(stringResource(R.string.pick_date)) }
+                Spacer(Modifier.height(8.dp))
+                Attribution()
+            }
+        } else if (tab == 1) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(widgetScroll)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                WidgetSettingsSection(settings, onSettingsChange)
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(settingsScroll)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                LanguageSection()
+            }
+        }
     }
 
     if (picking) {
@@ -349,5 +393,19 @@ private fun PickDateDialog(
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     ) {
         DatePicker(state = state)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AlmanacScreenPreview() {
+    SimpleTungShingTheme {
+        val context = LocalContext.current
+        val calendar = remember { CalendarData.get(context) }
+        AlmanacScreen(
+            calendar = calendar,
+            settings = WidgetSettings(),
+            onSettingsChange = {},
+        )
     }
 }

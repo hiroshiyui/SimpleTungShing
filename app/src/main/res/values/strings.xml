@@ -2,6 +2,12 @@
     <string name="app_name">Simple Tung Shing</string>
     <string name="widget_name">Tung Shing</string>
     <string name="widget_description">Today\'s Gregorian and lunar dates, stem-branch, and clash</string>
+    <string name="tab_almanac">Almanac</string>
+    <string name="tab_widget">Widget</string>
+    <string name="tab_settings">Settings</string>
+    <string name="month_title_pattern">MMMM y</string>
+    <string name="previous_month">Previous month</string>
+    <string name="next_month">Next month</string>
     <string name="previous_day">Previous</string>
     <string name="today">Today</string>
     <string name="next_day">Next</string>

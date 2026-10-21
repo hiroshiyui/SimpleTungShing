@@ -2,6 +2,12 @@
     <string name="app_name">簡易農民曆</string>
     <string name="widget_name">農民曆</string>
     <string name="widget_description">今日國曆、農曆、干支與沖煞</string>
+    <string name="tab_almanac">農民曆</string>
+    <string name="tab_widget">小工具</string>
+    <string name="tab_settings">設定</string>
+    <string name="month_title_pattern">y年M月</string>
+    <string name="previous_month">上個月</string>
+    <string name="next_month">下個月</string>
     <string name="previous_day">前一日</string>
     <string name="today">今天</string>
     <string name="next_day">後一日</string>
