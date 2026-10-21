@@ -11,15 +11,16 @@ What I show you:
 * Solar terms (節氣), such as 立春 and 霜降, on their day
 * Han traditional festivals and religious observances (節日), such as 春節, 清明節, 端午節, 中秋節 and 天后誕
 * The moon phase, worked out from the lunar day or by astronomical calculation, as you prefer
+* A month calendar with each day's lunar date and solar term; tap a day to see its almanac
 
 Make the widget your own:
 
 * Solid, gradient or glass-style background, following your wallpaper colors on Android 12 and later
 * Adjustable transparency, margin, padding and text alignment
-* A live preview in my settings shows the widget as you change it, and a button adds it to your home screen in one tap
+* A live preview on my Widget tab shows the widget as you change it, and a button adds it to your home screen in one tap
 * I refresh myself just after midnight, and when the time, time zone or language changes
 
-My interface speaks English and 台灣漢語 (Taiwanese Mandarin). I follow your system language, and on Android 13 and later you can also choose a language in my settings. The almanac content itself stays in Han script (漢文).
+My interface speaks English and 台灣漢語 (Taiwanese Mandarin). I follow your system language, and on Android 13 and later you can also choose a language on my Settings tab. The almanac content itself stays in Han script (漢文).
 
 Almanac items such as the stem-branch, clash and sha are folk customs and traditions. Please enjoy them as culture, not as predictions.
 

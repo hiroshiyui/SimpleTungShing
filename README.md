@@ -14,15 +14,15 @@ The widget in its solid, gradient and glass styles, on 重陽節:
 
 <p align="center"><img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/3.png" alt="Widget in solid, gradient and glass styles" width="720"></p>
 
-The app in 台灣漢語 and English: the day's almanac, and the widget and language settings.
+The app in 台灣漢語 and English: the Almanac tab with its month calendar, and the Widget tab with a live preview of the widget.
 
-程式的台灣漢語與英文介面：當日農民曆，以及小工具外觀與語言設定。
+程式的台灣漢語與英文介面：附月曆的「農民曆」分頁，以及可即時預覽小工具的「小工具」分頁。
 
 <p align="center">
-  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/1.png" alt="Almanac screen in 台灣漢語" width="200">
-  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/2.png" alt="Widget preview and settings in 台灣漢語" width="200">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Almanac screen in English" width="200">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Widget preview and settings in English" width="200">
+  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/1.png" alt="Almanac tab with month calendar in 台灣漢語" width="200">
+  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/2.png" alt="Widget tab with preview and settings in 台灣漢語" width="200">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Almanac tab with month calendar in English" width="200">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Widget tab with preview and settings in English" width="200">
 </p>
 
 ## Download 下載
@@ -48,7 +48,7 @@ gpg --verify simpletungshing_v1.0.1-release.apk.asc simpletungshing_v1.0.1-relea
 - **Solar terms** (節氣), such as 立春 and 霜降, shown on their day.
 - **Festivals and observances** (節日) from the Han traditional and religious calendars, such as 春節, 清明節, 端午節, 中秋節 and 天后誕, shown on the widget and in the app.
 - **Moon phase**, derived either from the lunar day (初一 as new moon) or by astronomical calculation; you pick the method.
-- **Companion app** for browsing any date in the dataset range, by stepping day by day or picking a date from a calendar. It also shows the ROC year and whether the lunar month is long or short.
+- **Companion app** for browsing any date in the dataset range, from a month calendar that marks each day's lunar date and solar term, by stepping day by day, or by picking a date. It also shows the ROC year and whether the lunar month is long or short. The widget's look is set on its own Widget tab, and the language on the Settings tab.
 - **English and Taiwanese Mandarin (台灣漢語)** interfaces, following the system language by default; on Android 13+ you can also pick the language in the app. Almanac content stays in Han script (漢文).
 - **Offline and private**: all data is bundled with the app. It has no internet permission, asks for no runtime permissions and collects nothing; the only permissions are the standard install-time ones WorkManager uses to update the widget.
 
@@ -57,7 +57,7 @@ gpg --verify simpletungshing_v1.0.1-release.apk.asc simpletungshing_v1.0.1-relea
 - **節氣**：在節氣當天顯示名稱，例如立春、霜降。
 - **節日**：在小工具與程式中顯示漢族傳統節日與宗教節日，例如春節、清明節、端午節、中秋節、天后誕等。
 - **月相**：可選擇依農曆日期（以初一為新月）推估，或以天文公式計算。
-- **隨附程式**：可逐日切換或從日曆選擇日期，瀏覽資料範圍內任一天的農民曆資訊，並另外顯示民國年與農曆大小月。
+- **隨附程式**：可從標示農曆日期與節氣的月曆點選、逐日切換或選擇日期，瀏覽資料範圍內任一天的農民曆資訊，並另外顯示民國年與農曆大小月。小工具外觀在「小工具」分頁設定，語言則在「設定」分頁。
 - **介面支援英文與台灣漢語**：預設跟隨系統語言，Android 13 以上也可在程式中自行選擇。農民曆內容維持漢文。
 - **離線、保護隱私**：所有資料皆隨程式內建，沒有網路權限，不要求任何執行階段權限，也不收集任何資料；僅帶有 WorkManager 更新小工具所需的標準安裝時權限。
 
