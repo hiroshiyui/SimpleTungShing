@@ -1,0 +1,5 @@
+Hi! This update gives me a fresh layout:
+
+* A month calendar now sits above the day's almanac. Each day shows its lunar date or solar term; tap one to see its details.
+* I'm now split into tabs: Almanac, Widget and, on Android 13 and later, Settings, so the widget's look and the language each have their own place.
+* When you open the Widget tab, the add-widget button gently ripples to show you where it is.
