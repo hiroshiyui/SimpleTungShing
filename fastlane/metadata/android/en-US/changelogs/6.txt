@@ -1,0 +1,3 @@
+Hi! A small tweak this time:
+
+* New widgets now start with a half-transparent background (50% opacity), so your wallpaper shows through. You can still adjust it in the app's widget settings.

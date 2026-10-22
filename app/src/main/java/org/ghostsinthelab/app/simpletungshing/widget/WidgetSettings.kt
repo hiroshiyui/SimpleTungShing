@@ -20,7 +20,7 @@ enum class ContentAlignment { START, CENTER, END }
 data class WidgetSettings(
     val style: BackgroundStyle = BackgroundStyle.SOLID,
     /** Background opacity, 0 (fully transparent) to 1. Text is unaffected. */
-    val opacity: Float = 1f,
+    val opacity: Float = 0.5f,
     val showMoon: Boolean = true,
     val moonMethod: MoonMethod = MoonMethod.LUNAR_DAY,
     /** Space between the widget's bounds and its background, in dp. */
