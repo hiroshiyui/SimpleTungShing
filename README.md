@@ -75,8 +75,6 @@ The fortune (吉凶), suitable and unsuitable activities (宜忌) and auspicious
 
 日干支、生肖、沖、煞由**本程式依傳統規則推算**，月相則依農曆日期或天文公式推算，皆非中央氣象署提供或認可。節日名稱與日期參考維基百科[「漢族傳統節日」](https://zh.wikipedia.org/zh-tw/漢族傳統節日)條目，列有多個日期者採臺灣習俗；節氣及與節氣相關的節日（清明、冬至、三伏）由本程式計算。吉凶、宜忌與吉時亦由本程式依《協紀辨方書》一系的建除十二神與黃道黑道十二神規則推算：月建以節氣切換，日的建除與十二神由日支推得，時辰的十二神則由日支起例並以五鼠遁推時干，並排除與日支相沖的時辰；宜忌為通書常見附於各建除日的事項。此為簡化規則，未納入市售農民曆另加的各種神煞，與市售農民曆可能不同。這些內容屬於民俗傳統，僅供參考，並非事實陳述或預測。
 
-此資料集未包含宜忌，因此本程式不顯示此項目。
-
 ## Building 建置
 
 Requirements: Android SDK (compile SDK 37). The Gradle daemon runs on JDK 25, which the foojay toolchain resolver downloads automatically if needed. The app supports Android 8.0 (API 26) and later.
