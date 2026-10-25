@@ -1,6 +1,6 @@
 ---
 name: docs-engineering
-description: Writing/updating project documentation (README, PRIVACY-POLICY, NOTICES, changelogs) and maintaining F-Droid metadata. Use when the user asks to update docs, write changelogs, or modify F-Droid store listings.
+description: Writing/updating project documentation (README, PRIVACY-POLICY, NOTICES, changelogs), maintaining F-Droid metadata, and keeping KDoc on the primary classes, methods and tests. Use when the user asks to update docs, write changelogs, modify F-Droid store listings, or comment code for maintainability.
 argument-hint: task description
 ---
 
@@ -77,5 +77,15 @@ fastlane/metadata/android/
 - Use established almanac terms: 農民曆 / 黃曆 / 通書 (Tung Shing), 國曆 (Gregorian calendar), 農曆 (lunar calendar), 民國 (ROC year), 干支 (sexagenary cycle), 生肖 (zodiac animal), 沖煞 (clash and sha direction), 閏月 (leap month).
 - Describe traditional almanac content neutrally as folk custom and tradition, not as fact or prediction.
 - **Respect external resource providers' efforts.** When describing problems in upstream projects, dependencies, data providers (e.g., CWA), or platforms, use softened wording. Prefer "issue", "behavior", or "limitation" over "bug"; prefer "resolved" or "addressed" over "fixed the bug". Frame workarounds as collaborative rather than corrective. This applies to both en-US and zh-TW text (e.g., use 「問題」 rather than 「錯誤」 or 「bug」 when referring to upstream).
+
+## Code Comments (KDoc)
+
+Human maintainers must be able to understand the design from the source alone, so the critical and primary classes and methods carry KDoc, and so do the test classes.
+
+- **What gets a comment.** Every public or primary class and object (`CalendarData`, `Almanac`, `SolarTerms`, `Auspicious`, `MoonPhase`, `Festivals`, `TungShingWidget`, `TungShingWidgetReceiver`, `WidgetSettings`, `MainActivity`, the main screens), every public entry point (e.g. `lookup`, `Auspicious.of`, `MoonPhase.of`, `refreshAll`, `save`), the settings enums, and private functions whose purpose or rule is not obvious from their body. Trivial getters and self-explanatory one-liners need none.
+- **What a comment says.** The role of the class in the app and the contract of the method: inputs, what it returns in edge cases (null outside the dataset range, defaults for bad stored values), the traditional rule or source behind a derivation (e.g. 建除 from 月建, 五鼠遁, Meeus chapter), and any non-obvious constraint such as blocking I/O, thread requirements, or why an alternative was rejected (the widget refresh key, `getAppWidgetIds` versus `getGlanceIds`). Do not restate the code line by line.
+- **Tests.** Each test class states what it covers and where its expected values come from (the real CSV, CWA-published 節氣 dates, hand-worked 干支, published syzygy times). Each test method gets a one-line note on the property it pins down, so a failure can be read without reverse-engineering the assertions.
+- **When to update.** Adding a class, public method or test, or changing a contract, includes writing or revising its KDoc in the same change. Check new comments for the naming rules above (漢文 not 中文, Han script not Chinese) before finishing.
+- **Form.** KDoc (`/** … */`) on declarations; `//` line comments inside bodies for a specific step. Keep almanac terms in Han script; write the prose in English. Use `[Name]` links for symbols in scope.
 
 ## Task: $ARGUMENTS
