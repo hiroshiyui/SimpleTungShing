@@ -9,9 +9,9 @@ import org.junit.runner.RunWith
 import org.junit.Assert.*
 
 /**
- * Instrumented test, which will execute on an Android device.
- *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * The template instrumented test, kept so `connectedAndroidTest` has something to run.
+ * It only confirms the test APK targets this package; widget and Compose behaviour is
+ * verified by hand on a device (see CLAUDE.md), not by instrumented tests.
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {

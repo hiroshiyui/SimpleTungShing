@@ -6,7 +6,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
 
+/**
+ * The 建除 and 黃道黑道 derivation in [Auspicious], plus the 月建 it depends on. Expected
+ * values were worked by hand from the 干支 of the dates in early 2024 (寅月 starts at 立春,
+ * 2024-02-04) and agree with published 農民曆 for those days.
+ */
 class AuspiciousTest {
+    /** The solar month switches on the 節 day itself, and the year starts and ends in 子月. */
     @Test
     fun monthBranchFollowsJie() {
         // 2024: 小寒 Jan 6, 立春 Feb 4, 大雪 Dec 6.
@@ -18,6 +24,7 @@ class AuspiciousTest {
         assertEquals(0, SolarTerms.monthBranch(LocalDate.of(2024, 12, 31))) // 子
     }
 
+    /** A 黃道 day end to end: 建除 value, deity, 宜忌, hour 干支 by 五鼠遁, hour deities, the clash and clock spans. */
     @Test
     fun lunarNewYear2024() {
         // 2024-02-10 is 甲辰日 in 寅月: 滿日, 金匱 (黃道).
@@ -38,6 +45,7 @@ class AuspiciousTest {
         assertEquals("09–11", day.hours[5].span)
     }
 
+    /** A 黑道 day whose branch equals the 月建, i.e. 建日. */
     @Test
     fun jianDay() {
         // 2024-03-03 is 丙寅日 in 寅月: 建日, 天刑 (黑道); 寅日 has 青龍 at 子.
@@ -51,6 +59,7 @@ class AuspiciousTest {
         assertEquals(listOf("子", "丑", "辰", "巳", "未", "戌"), day.auspiciousHours.map { Almanac.branchName(it.branch) })
     }
 
+    /** An hour can be 黃道 and still not 吉時 when its branch is the 六沖 of the day branch. */
     @Test
     fun clashingHourIsExcluded() {
         // 2024-02-18 is 壬子日 in 寅月: 開日, 青龍; 子日 has 青龍 at 申, so 午 (司命, 黃道) clashes the day.
@@ -66,6 +75,7 @@ class AuspiciousTest {
         assertEquals(listOf("子", "丑", "卯", "申", "酉"), day.auspiciousHours.map { Almanac.branchName(it.branch) })
     }
 
+    /** Two structural properties of 建除: 破 is the branch opposite the 月建, and the value repeats across a 節 boundary. */
     @Test
     fun poDayOpposesMonth() {
         // 破 is always the branch clashing with the 月建: 2024-02-26 is 庚申日 in 寅月.

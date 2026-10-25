@@ -9,9 +9,11 @@ import java.time.ZoneId
 import kotlin.math.abs
 import kotlin.math.min
 
+/** Both [MoonMethod]s: fixed names from the lunar day, and the Meeus phase angle against known new and full moons. */
 class MoonPhaseTest {
     private val taipei = ZoneId.of("Asia/Taipei")
 
+    /** 初一 is new, 十五 full, and the quarters fall on about the 8th and 23rd. */
     @Test
     fun lunarDayNames() {
         assertEquals("新月", MoonPhase.fromLunarDay(1).name)
@@ -21,6 +23,7 @@ class MoonPhaseTest {
         assertEquals("殘月", MoonPhase.fromLunarDay(28).name)
     }
 
+    /** Published syzygy times, read at Taipei noon the same day. */
     @Test
     fun astronomicalFullAndNewMoon() {
         // Full moon 2025-10-07 03:48 UTC; new moon 2025-10-21 12:25 UTC.
@@ -34,6 +37,7 @@ class MoonPhaseTest {
         assertTrue(!MoonPhase.astronomical(LocalDate.of(2025, 10, 14), taipei).isWaxing)
     }
 
+    /** Guards both methods at once: over every day of the dataset they never drift more than a tenth of a cycle apart. */
     @Test
     fun methodsAgreeAcrossDataset() {
         val calendar = File("src/main/assets/${CalendarData.ASSET_NAME}").bufferedReader()

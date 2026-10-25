@@ -4,7 +4,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDate
 
+/** The rule-based 通書 items in [Almanac], checked against hand-computed 干支 values. */
 class AlmanacTest {
+    /** The 1949-10-01 甲子 anchor, a full number of cycles after it, and the day before it (負 modulo). */
     @Test
     fun dayGanZhi() {
         assertEquals("甲子", Almanac.dayGanZhi(LocalDate.of(1949, 10, 1)))
@@ -13,6 +15,7 @@ class AlmanacTest {
         assertEquals("癸亥", Almanac.dayGanZhi(LocalDate.of(1949, 9, 30)))
     }
 
+    /** 沖 is branch +6 with stem +4; 煞 follows the 三合 groups 申子辰南、巳酉丑東、寅午戌北、亥卯未西. */
     @Test
     fun chongSha() {
         val jiazi = LocalDate.of(1949, 10, 1)
@@ -24,6 +27,7 @@ class AlmanacTest {
         assertEquals("煞西", Almanac.sha(jiazi.plusDays(3))) // 丁卯
     }
 
+    /** Han-script month and day names, including the 正／閏／廿 special forms. */
     @Test
     fun names() {
         assertEquals("馬", Almanac.zodiacOf("丙午"))

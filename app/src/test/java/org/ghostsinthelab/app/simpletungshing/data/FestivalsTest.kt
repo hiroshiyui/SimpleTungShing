@@ -6,12 +6,18 @@ import org.junit.Test
 import java.io.File
 import java.time.LocalDate
 
+/**
+ * [SolarTerms] dates and names, and the [Festivals] tables on top of them and the real
+ * dataset. Expected dates are the Taiwan-time ones CWA publishes, so a drift in the
+ * Meeus solar-longitude routine past the day boundary shows up here.
+ */
 class FestivalsTest {
     private val calendar = File("src/main/assets/${CalendarData.ASSET_NAME}").bufferedReader()
         .use { CalendarData.parse(it) }
 
     private fun on(year: Int, month: Int, day: Int) = Festivals.on(LocalDate.of(year, month, day), calendar)
 
+    /** The four longitudes festivals depend on, in years where the term falls near midnight Taiwan time. */
     @Test
     fun solarTermDates() {
         // Taiwan-time dates published by CWA.
@@ -23,6 +29,7 @@ class FestivalsTest {
         assertEquals(LocalDate.of(2025, 12, 21), SolarTerms.dateOf(2025, SolarTerms.DONGZHI))
     }
 
+    /** Spot-checks of [SolarTerms.termOn], then every year of the dataset must carry exactly 24 distinct terms. */
     @Test
     fun solarTermNames() {
         assertEquals("立春", SolarTerms.termOn(LocalDate.of(2025, 2, 3)))
@@ -40,6 +47,7 @@ class FestivalsTest {
         }
     }
 
+    /** Lunar-dated festivals, including 除夕 (the day before 正月初一) and days with several entries, folk first. */
     @Test
     fun lunarFestivals() {
         assertEquals(listOf("除夕"), on(2026, 2, 16))
@@ -49,6 +57,7 @@ class FestivalsTest {
         assertEquals(emptyList<String>(), on(2026, 10, 17))
     }
 
+    /** Festivals set by 節氣 and 庚 days: 寒食 the day before 清明, and the 三伏 counted from 夏至 and 立秋. */
     @Test
     fun solarFestivals() {
         assertEquals(listOf("寒食節"), on(2025, 4, 3))
@@ -60,6 +69,7 @@ class FestivalsTest {
         assertTrue("終伏日" in on(2025, 8, 9))
     }
 
+    /** Each term-based festival and 春節 occur exactly once per calendar year across the whole dataset. */
     @Test
     fun eachYearHasOneOfEverySolarFestival() {
         val solar = listOf("寒食節", "清明節", "頭伏日", "二伏日", "終伏日", "冬至")
