@@ -56,6 +56,7 @@ object Almanac {
         return "煞$direction"
     }
 
+    /** Lunar month name in Han script: 正月, 二月 … 十二月, prefixed 閏 for a leap month. */
     fun monthName(month: Int, isLeap: Boolean): String {
         val name = when (month) {
             1 -> "正"
@@ -65,6 +66,7 @@ object Almanac {
         return (if (isLeap) "閏" else "") + name + "月"
     }
 
+    /** Lunar day name in Han script: 初一 … 初十, 十一 … 十九, 二十, 廿一 … 廿九, 三十. */
     fun dayName(day: Int): String = when {
         day <= 10 -> "初" + NUMERALS[day - 1]
         day < 20 -> "十" + NUMERALS[day - 11]

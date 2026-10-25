@@ -60,6 +60,16 @@ import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * The home-screen widget: today's solar and lunar date, festivals and 節氣, the moon,
+ * and (when the size allows) 干支 and 沖煞. Rendered with Jetpack Glance from the
+ * bundled [CalendarData] and the user's [WidgetSettings].
+ *
+ * The date is read inside composition and tied to the [REFRESHED_AT] state key, so
+ * [refreshAll] must bump that key for a running session to pick up a new day; see the
+ * comments in [provideGlance] and [refreshAll] for why neither plain `update()` nor
+ * `GlanceAppWidgetManager.getGlanceIds` is enough.
+ */
 class TungShingWidget : GlanceAppWidget() {
 
     // Exact rather than responsive buckets: the user's margin and padding eat into the
@@ -83,6 +93,7 @@ class TungShingWidget : GlanceAppWidget() {
         }
     }
 
+    /** Applies the outer margin and decides whether the full layout fits the widget's real size. */
     @Composable
     private fun Content(today: LocalDate, calendar: CalendarData, settings: WidgetSettings) {
         val lunar = calendar.lookup(today)
@@ -95,6 +106,11 @@ class TungShingWidget : GlanceAppWidget() {
         }
     }
 
+    /**
+     * The background and the text lines. Three states: data run out (notice only),
+     * date outside the dataset (solar date and a notice), or the almanac lines, with the
+     * 干支 and 沖煞 lines only when [full].
+     */
     @Composable
     private fun Body(
         today: LocalDate,

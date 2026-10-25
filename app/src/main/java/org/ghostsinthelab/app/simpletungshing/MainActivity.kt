@@ -83,6 +83,12 @@ import java.time.format.TextStyle
 import kotlin.math.roundToInt
 
 
+/**
+ * The single activity. Loads [CalendarData] off the main thread, then shows either
+ * [DataRunOutScreen] (dataset ended) or [AlmanacScreen]. Starting the app also
+ * reschedules the widget's midnight alarm and redraws all widgets, so a date or
+ * language change made while the app was closed reaches the home screen.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,6 +143,11 @@ fun DataRunOutScreen(calendar: CalendarData, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * The main screen: tabs for the almanac (month grid, day card, date picker and
+ * attribution), the widget settings, and on Android 13+ the language picker.
+ * The browsed date is kept as an epoch day so it survives configuration changes.
+ */
 @Composable
 fun AlmanacScreen(
     calendar: CalendarData,
@@ -234,6 +245,11 @@ fun AlmanacScreen(
     }
 }
 
+/**
+ * Everything the app shows for one day: the CWA lunar date, then the app-derived rows
+ * (干支, 沖煞, 節氣, festivals, moon by the widget's moon-method
+ * setting, and 吉凶／宜忌／吉時). Shows an out-of-range message when the date has no CWA row.
+ */
 @Composable
 private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSettings) {
     val lunar = calendar.lookup(date)
@@ -418,6 +434,7 @@ private fun Attribution() {
     }
 }
 
+/** Material 3 date picker limited to the dataset range. It works in UTC-midnight millis, hence the conversions. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PickDateDialog(

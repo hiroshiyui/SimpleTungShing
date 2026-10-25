@@ -29,6 +29,7 @@ class CalendarData private constructor(private val days: List<LunarDay>) {
     /** Past the end of the CWA data: the app and widget then stop and only say so. */
     fun hasRunOut(today: LocalDate): Boolean = today > lastDate
 
+    /** The lunar date of [date], or null outside [firstDate]..[lastDate]; callers must show an out-of-range message then. */
     fun lookup(date: LocalDate): LunarDay? {
         val index = date.toEpochDay() - firstDate.toEpochDay()
         return if (index in days.indices) days[index.toInt()] else null

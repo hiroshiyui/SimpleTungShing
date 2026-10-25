@@ -161,6 +161,7 @@ private fun DayCell(cell: MonthCell, isSelected: Boolean, isToday: Boolean, modi
     }
 }
 
+/** Keeps month stepping inside the dataset range. */
 private fun clamp(date: LocalDate, calendar: CalendarData): LocalDate = when {
     date < calendar.firstDate -> calendar.firstDate
     date > calendar.lastDate -> calendar.lastDate

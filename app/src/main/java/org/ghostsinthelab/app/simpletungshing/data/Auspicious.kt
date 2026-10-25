@@ -39,6 +39,7 @@ object Auspicious {
         listOf("安葬", "築堤", "填補") to listOf("開市", "出行", "嫁娶", "求醫"),
     )
 
+    /** Everything [of] derives for one calendar day. */
     class Day(
         /** 建除十二神, e.g. "建". */
         val jianChu: String,
@@ -56,6 +57,7 @@ object Auspicious {
         val auspiciousHours: List<Hour> get() = hours.filter { it.isAuspicious }
     }
 
+    /** One 時辰 (double hour) of a day and its 黃道／黑道 standing. */
     class Hour(
         /** 0 = 子 … 11 = 亥. */
         val branch: Int,
@@ -80,6 +82,12 @@ object Auspicious {
     /** The 青龍 branch for a cycle keyed by [branch]: 寅申 → 子, 卯酉 → 寅, 辰戌 → 辰, … */
     private fun qingLongStart(branch: Int) = Math.floorMod(branch - 2, 6) * 2
 
+    /**
+     * Computes the day's values. 建除 is the day branch counted from the 月建
+     * (建 when they coincide); the day deity cycle starts at 青龍 on the branch
+     * [qingLongStart] gives for the month, and the hour deity cycle likewise
+     * for the day; hour stems follow 五鼠遁 from the day stem.
+     */
     fun of(date: LocalDate): Day {
         val monthBranch = SolarTerms.monthBranch(date)
         val dayStem = Almanac.dayStem(date)

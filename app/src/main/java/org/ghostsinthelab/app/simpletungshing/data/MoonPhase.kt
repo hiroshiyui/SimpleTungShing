@@ -61,6 +61,7 @@ data class MoonPhase(val cycle: Double) {
             return MoonPhase(normalize(180 - phaseAngle) / 360)
         }
 
+        /** Phase by [method]; null when [LUNAR_DAY][MoonMethod.LUNAR_DAY] is chosen but [lunar] is outside the dataset. */
         fun of(method: MoonMethod, date: LocalDate, lunar: LunarDay?): MoonPhase? = when (method) {
             MoonMethod.LUNAR_DAY -> lunar?.let { fromLunarDay(it.day) }
             MoonMethod.ASTRONOMICAL -> astronomical(date)

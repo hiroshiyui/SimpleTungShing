@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.ghostsinthelab.app.simpletungshing.data.MoonMethod
 
+/** Widget background, each a `widget_bg_*` shape drawable; GLASS is a translucent gradient with a sheen, not a real blur. */
 enum class BackgroundStyle { SOLID, GRADIENT, GLASS }
 
+/** Horizontal alignment of the widget's text lines inside the background. */
 enum class ContentAlignment { START, CENTER, END }
 
 /** Appearance shared by every placed widget; edited in the app. */
@@ -43,6 +45,7 @@ data class WidgetSettings(
         val MARGIN_RANGE = 0..24
         val PADDING_RANGE = 0..32
 
+        /** Current settings and every later change; unknown or out-of-range stored values fall back to the defaults. */
         fun flow(context: Context): Flow<WidgetSettings> =
             context.applicationContext.store.data.map { it.toSettings() }
 

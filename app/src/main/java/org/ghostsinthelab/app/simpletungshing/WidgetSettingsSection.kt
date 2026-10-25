@@ -42,6 +42,11 @@ import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
 import kotlin.math.roundToInt
 
+/**
+ * The widget tab's card: a live [WidgetPreview] plus controls for every [WidgetSettings]
+ * field. Each control reports a whole new settings value through [onChange], which the
+ * caller persists (and thereby redraws all widgets).
+ */
 @Composable
 fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -> Unit) {
     Card(modifier = Modifier.fillMaxWidth()) {

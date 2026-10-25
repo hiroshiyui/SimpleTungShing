@@ -13,6 +13,12 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 
+/**
+ * Manifest-declared receiver for [TungShingWidget]. Besides the standard app-widget
+ * callbacks it owns the daily refresh: an inexact, non-wakeup alarm just after local
+ * midnight, rescheduled from every update and from app start, and the clock, time zone,
+ * locale and package-replaced broadcasts, all of which redraw via [TungShingWidget.refreshAll].
+ */
 class TungShingWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override val glanceAppWidget: GlanceAppWidget = TungShingWidget()
@@ -27,6 +33,11 @@ class TungShingWidgetReceiver : GlanceAppWidgetReceiver() {
         context.getSystemService(AlarmManager::class.java).cancel(midnightIntent(context))
     }
 
+    /**
+     * Handles the refresh actions here instead of in `super.onReceive`, which would call
+     * `goAsync()` first (making ours return null) and handle LOCALE_CHANGED with a plain
+     * `update()` that leaves a running session stale.
+     */
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             ACTION_MIDNIGHT,
