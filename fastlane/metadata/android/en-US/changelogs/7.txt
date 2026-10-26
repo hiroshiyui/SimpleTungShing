@@ -1,0 +1,6 @@
+Hi! A housekeeping release while I get ready for F-Droid:
+
+* I now carry my license (GPL-3.0-or-later) in the source tree.
+* The build no longer insists on a specific JDK, so F-Droid and other build servers can build me with their own.
+
+Nothing changes in the almanac or the widget.

@@ -77,9 +77,9 @@ The fortune (吉凶), suitable and unsuitable activities (宜忌) and auspicious
 
 ## Building 建置
 
-Requirements: Android SDK (compile SDK 37). The Gradle daemon runs on JDK 25, which the foojay toolchain resolver downloads automatically if needed. The app supports Android 8.0 (API 26) and later.
+Requirements: Android SDK (compile SDK 37) and JDK 17 or later. The build uses whatever JDK Gradle is started with, so F-Droid and other build servers can use their own. The app supports Android 8.0 (API 26) and later.
 
-需求：Android SDK（compile SDK 37）。Gradle daemon 使用 JDK 25，必要時 foojay toolchain resolver 會自動下載。程式支援 Android 8.0（API 26）以上版本。
+需求：Android SDK（compile SDK 37）與 JDK 17 以上。建置使用啟動 Gradle 的 JDK，因此 F-Droid 等建置伺服器可使用自己的 JDK。程式支援 Android 8.0（API 26）以上版本。
 
 ```bash
 ./gradlew :app:assembleDebug        # Debug APK → app/build/outputs/apk/debug/
