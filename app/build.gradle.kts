@@ -13,8 +13,8 @@ android {
         applicationId = "org.ghostsinthelab.app.simpletungshing"
         minSdk = 26
         targetSdk = 37
-        versionCode = 7
-        versionName = "1.3.2"
+        versionCode = 8
+        versionName = "1.3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,6 +38,11 @@ android {
     }
     androidResources {
         generateLocaleConfig = true
+    }
+    // F-Droid rejects the Google Play "Dependency metadata" signing block, so leave it out.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 

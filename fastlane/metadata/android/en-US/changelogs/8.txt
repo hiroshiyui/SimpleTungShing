@@ -1,0 +1,5 @@
+Hi! One more small step toward F-Droid:
+
+* My release builds no longer include the Google Play dependency metadata block, which F-Droid asks publishers to leave out.
+
+Nothing changes in the almanac or the widget.
