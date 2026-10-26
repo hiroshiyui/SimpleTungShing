@@ -92,3 +92,9 @@ Requirements: Android SDK (compile SDK 37). The Gradle daemon runs on JDK 25, wh
 This app uses open data from the Central Weather Administration, Ministry of Transportation and Communications: 「日曆資料-國農曆對照」 (<https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001>), used in accordance with the [CWA Open Data Platform data usage rules](https://opendata.cwa.gov.tw/about/rules). See [NOTICES.md](NOTICES.md) for all third-party notices.
 
 本程式使用交通部中央氣象署開放資料「日曆資料-國農曆對照」（<https://opendata.cwa.gov.tw/dataset/astronomy/A-A0087-001>），依[中央氣象署開放資料平臺資料使用規範](https://opendata.cwa.gov.tw/about/rules)使用。完整第三方聲明請見 [NOTICES.md](NOTICES.md)。
+
+## License 授權
+
+Simple Tung Shing is free software, released under the [GNU General Public License, version 3 or later](LICENSE). The bundled CWA data and the Wikipedia festival list keep their own terms, as listed in [NOTICES.md](NOTICES.md).
+
+簡易農民曆是自由軟體，以 [GNU 通用公共授權第 3 版或其後版本](LICENSE)釋出。隨附的中央氣象署資料與維基百科節日列表則各依其原本的使用條款，詳見 [NOTICES.md](NOTICES.md)。
