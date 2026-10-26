@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Simple Tung Shing (農民曆／黃曆／通書) is an Android home-screen widget plus a small Compose app. It is offline-only: all date data comes from the bundled CWA open data CSV. It declares no permissions itself and has no `INTERNET`; the merged manifest carries only WorkManager's install-time ones (`WAKE_LOCK`, `ACCESS_NETWORK_STATE`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`), so docs must not claim "no permissions". Package: `org.ghostsinthelab.app.simpletungshing`; minSdk 26, compile/target SDK 37, AGP 9 (built-in Kotlin, no separate kotlin-android plugin), Gradle runs on whatever JDK starts it (17+); there is no `gradle-daemon-jvm.properties`, so F-Droid can build with its own JDK — do not run `updateDaemonJvm`.
+Simple Tung Shing (農民曆／黃曆／通書) is an Android home-screen widget plus a small Compose app. It is offline-only: all date data comes from the bundled CWA open data CSV. It declares no permissions itself and has no `INTERNET`; the merged manifest carries only WorkManager's install-time ones (`WAKE_LOCK`, `ACCESS_NETWORK_STATE`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`), so docs must not claim "no permissions". Package: `org.ghostsinthelab.app.simpletungshing`; minSdk 26, compile/target SDK 37, AGP 9 (built-in Kotlin, no separate kotlin-android plugin), Gradle runs on whatever JDK starts it (17+); there is no `gradle-daemon-jvm.properties` and no foojay toolchain-resolver plugin (the F-Droid scanner rejects it), so F-Droid can build with its own JDK — do not run `updateDaemonJvm` or re-add the plugin.
 
 ## Commands
 
