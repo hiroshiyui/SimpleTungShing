@@ -27,6 +27,13 @@ The established release workflow follows this pattern:
 5. **Create release commit** — commit message format: `Release <versionName>` with `Signed-off-by` trailer.
 6. **Tag the release** — lightweight tag matching versionName (e.g. `1.0.1`). Tags are NOT annotated.
 7. **Build signed APKs** — only now, after the commit and tag: F-Droid builds reproducibly from the tagged commit, so the published APKs have to be built from exactly that commit. Signing requires a keystore passphrase, so **do not run the build automatically**. Prompt the user to build the signed APKs manually in Android Studio (Build > Generate Signed APK) or via the command line. Output: `app/build/outputs/apk/release/simpletungshing_v<version>-release.apk` (debug builds go to `app/build/outputs/apk/debug/`). Android Studio may also leave copies in `app/release/` and `app/debug/`, but the user signs the ones under `app/build/outputs/apk/`. Wait for the user to confirm the build is complete before proceeding.
+
+   **Clean first, then verify the signed build matches F-Droid's.** Kotlin incremental compilation can emit slightly different line-number tables when it recompiles one file alone; that changes R8's mapping file and the `r8-map-id` string embedded in `classes.dex` while the code stays the same, and F-Droid's reproducible-build check then fails with "CHUNKED_SHA256 digest mismatch" and `classes.dex`/`baseline.prof` differing (this hit 1.4.0). So before the user signs, make a clean reference build and note its dex hash:
+   ```bash
+   ./gradlew clean :app:assembleRelease
+   unzip -p app/build/outputs/apk/release/simpletungshing_v<version>-release-unsigned.apk classes.dex | sha256sum
+   ```
+   The signed build the user then runs (Android Studio's wizard or the command line) reuses those compiled classes, so its dex must hash the same. After the user confirms, check `unzip -p <signed apk> classes.dex | sha256sum` against the noted hash; if it differs, clean and sign again.
 8. **GPG-sign** the APKs (see GPG Signing below), then **push** the commit and tag and create the GitHub Release when the user confirms.
 
 ### Git Conventions
