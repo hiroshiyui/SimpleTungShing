@@ -295,15 +295,19 @@ class TungShingWidget : GlanceAppWidget() {
 
         /** Re-renders every placed widget so it picks up the current date. */
         suspend fun refreshAll(context: Context) {
+            FontScaleWorker.noteRendered(context)
             val widget = TungShingWidget()
             val glance = GlanceAppWidgetManager(context)
             // Ask the platform rather than GlanceAppWidgetManager.getGlanceIds, which looks the
             // widget up by its class name as stored at the last render: R8 renames the class
             // between builds, so after an upgrade that lookup finds nothing until the launcher
             // sends its own update, leaving the widget on its loading layout.
-            AppWidgetManager.getInstance(context)
+            val ids = AppWidgetManager.getInstance(context)
                 .getAppWidgetIds(ComponentName(context, TungShingWidgetReceiver::class.java))
-                .map(glance::getGlanceIdBy)
+            // Every refresh path (app start, midnight, package replaced) also keeps the
+            // font-scale check in step with whether any widget exists.
+            if (ids.isEmpty()) FontScaleWorker.cancel(context) else FontScaleWorker.schedule(context)
+            ids.map(glance::getGlanceIdBy)
                 .forEach { id ->
                     updateAppWidgetState(context, id) { it[REFRESHED_AT] = System.currentTimeMillis() }
                     widget.update(context, id)

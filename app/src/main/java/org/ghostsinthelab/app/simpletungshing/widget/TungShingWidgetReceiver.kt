@@ -18,6 +18,8 @@ import java.time.ZoneId
  * callbacks it owns the daily refresh: an inexact, non-wakeup alarm just after local
  * midnight, rescheduled from every update and from app start, and the clock, time zone,
  * locale and package-replaced broadcasts, all of which redraw via [TungShingWidget.refreshAll].
+ * It also keeps [FontScaleWorker] scheduled while any widget exists, since no broadcast
+ * reports a font size change.
  */
 class TungShingWidgetReceiver : GlanceAppWidgetReceiver() {
 
@@ -26,11 +28,14 @@ class TungShingWidgetReceiver : GlanceAppWidgetReceiver() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         scheduleMidnightRefresh(context)
+        FontScaleWorker.noteRendered(context)
+        FontScaleWorker.schedule(context)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
         context.getSystemService(AlarmManager::class.java).cancel(midnightIntent(context))
+        FontScaleWorker.cancel(context)
     }
 
     /**
