@@ -40,22 +40,24 @@ import org.ghostsinthelab.app.simpletungshing.widget.BackgroundStyle
 import org.ghostsinthelab.app.simpletungshing.widget.ContentAlignment
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
+import java.time.LocalDate
 import kotlin.math.roundToInt
 
 /**
- * The widget tab's card: a live [WidgetPreview] plus controls for every [WidgetSettings]
- * field. Each control reports a whole new settings value through [onChange], which the
+ * The widget tab's card: a live [WidgetPreview] of [date] plus controls for every
+ * [WidgetSettings] field. Each control reports a whole new settings value through [onChange], which the
  * caller persists (and thereby redraws all widgets).
  */
 @Composable
-fun WidgetSettingsSection(settings: WidgetSettings, onChange: (WidgetSettings) -> Unit) {
+fun WidgetSettingsSection(settings: WidgetSettings, date: LocalDate, onChange: (WidgetSettings) -> Unit) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.titleMedium)
-            WidgetPreview(settings)
+            WidgetPreview(settings, date)
+            Note(stringResource(R.string.preview_date_note))
             AddWidgetButton()
 
             Label(stringResource(R.string.settings_background))

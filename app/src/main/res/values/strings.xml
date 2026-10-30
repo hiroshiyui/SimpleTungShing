@@ -37,6 +37,7 @@
     <string name="moon_phase_value">%1$s (about %2$d%% lit)</string>
     <string name="settings_title">Widget appearance</string>
     <string name="add_widget">Add widget to home screen</string>
+    <string name="preview_date_note">The preview shows the date selected in the almanac tab.</string>
     <string name="settings_background">Background</string>
     <string name="style_solid">Solid</string>
     <string name="style_gradient">Gradient</string>

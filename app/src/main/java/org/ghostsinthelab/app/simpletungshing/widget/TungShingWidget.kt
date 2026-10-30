@@ -6,8 +6,6 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
@@ -25,6 +23,7 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
+import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
@@ -54,7 +53,6 @@ import org.ghostsinthelab.app.simpletungshing.R
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
 import org.ghostsinthelab.app.simpletungshing.data.Festivals
-import org.ghostsinthelab.app.simpletungshing.data.LunarDay
 import org.ghostsinthelab.app.simpletungshing.data.MoonPhase
 import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import java.time.LocalDate
@@ -62,8 +60,9 @@ import java.time.format.DateTimeFormatter
 
 /**
  * The home-screen widget: today's solar and lunar date, festivals and 節氣, the moon,
- * and (when the size allows) 干支 and 沖煞. Rendered with Jetpack Glance from the
- * bundled [CalendarData] and the user's [WidgetSettings].
+ * and (when the size allows) 干支 and 沖煞, scaled and trimmed to the widget's size by
+ * [WidgetFit]. Rendered with Jetpack Glance from the bundled [CalendarData] and the
+ * user's [WidgetSettings].
  *
  * The date is read inside composition and tied to the [REFRESHED_AT] state key, so
  * [refreshAll] must bump that key for a running session to pick up a new day; see the
@@ -73,7 +72,7 @@ import java.time.format.DateTimeFormatter
 class TungShingWidget : GlanceAppWidget() {
 
     // Exact rather than responsive buckets: the user's margin and padding eat into the
-    // real size, which decides whether the full layout fits.
+    // real size, from which WidgetFit scales the text and picks the lines.
     override val sizeMode = SizeMode.Exact
 
     override val stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
@@ -85,62 +84,110 @@ class TungShingWidget : GlanceAppWidget() {
         provideContent {
             // Reading the refresh stamp makes a running session recompose on refresh(),
             // so the date below is re-read after midnight.
-            currentState<Preferences>()[REFRESHED_AT]
+            val state = currentState<Preferences>()
+            state[REFRESHED_AT]
+            val previewDate = state[PREVIEW_DATE]?.let(LocalDate::ofEpochDay)
             val settings by settingsFlow.collectAsState(initialSettings)
             GlanceTheme {
-                Content(LocalDate.now(), calendar, settings)
+                Content(previewDate ?: LocalDate.now(), calendar, settings, preview = previewDate != null)
             }
         }
     }
 
-    /** Applies the outer margin and decides whether the full layout fits the widget's real size. */
+    /**
+     * Applies the outer margin and fits the lines into the widget's real size with
+     * [WidgetFit]: font sizes shrink, then lines drop, then the lines scroll.
+     */
     @Composable
-    private fun Content(today: LocalDate, calendar: CalendarData, settings: WidgetSettings) {
+    private fun Content(today: LocalDate, calendar: CalendarData, settings: WidgetSettings, preview: Boolean) {
+        val context = LocalContext.current
+        val locale = context.resources.configuration.locales[0]
         val lunar = calendar.lookup(today)
-        val inset = ((settings.marginDp + settings.paddingDp) * 2).dp
+        val inset = (settings.marginDp + settings.paddingDp) * 2f
         val size = LocalSize.current
-        val full = size.width - inset >= FULL_CONTENT.width && size.height - inset >= FULL_CONTENT.height
         val moon = if (settings.showMoon) MoonPhase.of(settings.moonMethod, today, lunar) else null
+        val header = WidgetLine(
+            today.format(DateTimeFormatter.ofPattern(context.getString(R.string.widget_header_pattern), locale)),
+            WidgetFit.HEADER_SP,
+        )
+        val lines = lunar?.let {
+            val festivals = Festivals.on(today, calendar)
+            // Skip the term when a festival already carries its name (清明 → 清明節, 冬至).
+            val term = SolarTerms.termOn(today)?.takeIf { t -> festivals.none { it.startsWith(t) } }
+            val observances = listOfNotNull(term) + festivals
+            Lines(
+                header = header,
+                lunar = WidgetLine(context.getString(R.string.widget_lunar_date, Almanac.lunarDateName(it)), WidgetFit.LUNAR_SP, bold = true),
+                observance = observances.takeIf { o -> o.isNotEmpty() }
+                    ?.let { o -> WidgetLine(o.joinToString("、"), WidgetFit.OBSERVANCE_SP, bold = true) },
+                ganZhi = listOf(
+                    WidgetLine("${it.yearGanZhi}年（${Almanac.zodiacOf(it.yearGanZhi)}）${Almanac.dayGanZhi(today)}日", WidgetFit.GANZHI_SP),
+                    WidgetLine("${Almanac.chong(today)} ${Almanac.sha(today)}", WidgetFit.GANZHI_SP),
+                ),
+            )
+        } ?: Lines(header, WidgetLine(context.getString(R.string.widget_out_of_range), WidgetFit.HEADER_SP), null, emptyList())
+        val layout = WidgetFit.fit(
+            widthDp = size.width.value - inset,
+            heightDp = size.height.value - inset,
+            fontScale = context.resources.configuration.fontScale,
+            header = lines.header,
+            lunar = lines.lunar,
+            observance = lines.observance,
+            ganZhi = lines.ganZhi,
+            showMoon = moon != null,
+        )
         Box(modifier = GlanceModifier.fillMaxSize().padding(settings.marginDp.dp)) {
-            Body(today, lunar, calendar, settings, moon, full)
+            // RemoteViews refuses a list adapter outside a real widget host ("setRemoteAdapter
+            // can only be used for AppWidgets"), so the preview shows the scroll layout as a
+            // plain, clipped column instead of nothing.
+            Body(today, calendar, settings, moon, lines, if (preview) layout.copy(scroll = false) else layout)
         }
     }
 
+    /** The texts of one day, before the fit decides which of them show. */
+    private class Lines(
+        val header: WidgetLine,
+        val lunar: WidgetLine,
+        val observance: WidgetLine?,
+        val ganZhi: List<WidgetLine>,
+    )
+
     /**
      * The background and the text lines. Three states: data run out (notice only),
-     * date outside the dataset (solar date and a notice), or the almanac lines, with the
-     * 干支 and 沖煞 lines only when [full].
+     * date outside the dataset (solar date and a notice, carried in [lines] with no 干支),
+     * or the almanac lines as [layout] allows. When [WidgetLayout.scroll] is set the lines
+     * go into a [LazyColumn] the user can scroll, since nothing smaller stays readable.
      */
     @Composable
     private fun Body(
         today: LocalDate,
-        lunar: LunarDay?,
         calendar: CalendarData,
         settings: WidgetSettings,
         moon: MoonPhase?,
-        full: Boolean,
+        lines: Lines,
+        layout: WidgetLayout,
     ) {
         val context = LocalContext.current
-        val locale = context.resources.configuration.locales[0]
-        Column(
-            modifier = GlanceModifier
-                .fillMaxSize()
-                .background(
-                    ImageProvider(backgroundOf(settings.style)),
-                    alpha = settings.opacity,
-                    contentScale = ContentScale.FillBounds,
-                )
-                .cornerRadius(16.dp)
-                .padding(settings.paddingDp.dp)
-                .clickable(actionStartActivity<MainActivity>()),
-            horizontalAlignment = when (settings.alignment) {
-                ContentAlignment.START -> Alignment.Start
-                ContentAlignment.CENTER -> Alignment.CenterHorizontally
-                ContentAlignment.END -> Alignment.End
-            },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (calendar.hasRunOut(today)) {
+        val horizontal = when (settings.alignment) {
+            ContentAlignment.START -> Alignment.Start
+            ContentAlignment.CENTER -> Alignment.CenterHorizontally
+            ContentAlignment.END -> Alignment.End
+        }
+        val background = GlanceModifier
+            .fillMaxSize()
+            .background(
+                ImageProvider(backgroundOf(settings.style)),
+                alpha = settings.opacity,
+                contentScale = ContentScale.FillBounds,
+            )
+            .cornerRadius(16.dp)
+            .padding(settings.paddingDp.dp)
+        if (calendar.hasRunOut(today)) {
+            Column(
+                modifier = background.clickable(actionStartActivity<MainActivity>()),
+                horizontalAlignment = horizontal,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
                     text = context.getString(R.string.widget_data_run_out),
                     maxLines = 4,
@@ -155,47 +202,50 @@ class TungShingWidget : GlanceAppWidget() {
                         },
                     ),
                 )
-                return@Column
             }
-            Line(
-                today.format(DateTimeFormatter.ofPattern(context.getString(R.string.widget_header_pattern), locale)),
-                13.sp, GlanceTheme.colors.onSurfaceVariant,
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = today.dayOfMonth.toString(),
-                    style = TextStyle(
-                        fontSize = if (full) 52.sp else 40.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = GlanceTheme.colors.primary,
-                    ),
-                )
-                if (moon != null) {
-                    Spacer(GlanceModifier.width(8.dp))
-                    Moon(moon, if (full) 32 else 24)
+            return
+        }
+        val scale = layout.scale
+        val items: List<@Composable () -> Unit> = buildList {
+            add { Line(lines.header, scale, GlanceTheme.colors.onSurfaceVariant) }
+            add {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = today.dayOfMonth.toString(),
+                        style = TextStyle(
+                            fontSize = (layout.numberSp * scale).sp,
+                            fontWeight = FontWeight.Bold,
+                            color = GlanceTheme.colors.primary,
+                        ),
+                    )
+                    if (moon != null) {
+                        Spacer(GlanceModifier.width((8 * scale).dp))
+                        Moon(moon, (WidgetFit.MOON_DP * scale).toInt())
+                    }
                 }
             }
-            if (lunar == null) {
-                Line(context.getString(R.string.widget_out_of_range), 13.sp, GlanceTheme.colors.onSurface)
-                return@Column
+            add { Line(lines.lunar, scale, GlanceTheme.colors.onSurface) }
+            if (layout.showObservance && lines.observance != null) {
+                add { Line(lines.observance, scale, GlanceTheme.colors.primary, maxLines = if (layout.observanceWraps) 2 else 1) }
             }
-            Line(context.getString(R.string.widget_lunar_date, Almanac.lunarDateName(lunar)), 16.sp, GlanceTheme.colors.onSurface, bold = true)
-            val festivals = Festivals.on(today, calendar)
-            // Skip the term when a festival already carries its name (清明 → 清明節, 冬至).
-            val term = SolarTerms.termOn(today)?.takeIf { t -> festivals.none { it.startsWith(t) } }
-            val observances = listOfNotNull(term) + festivals
-            if (observances.isNotEmpty()) {
-                Line(observances.joinToString("、"), 13.sp, GlanceTheme.colors.primary, bold = true)
+            if (layout.showGanZhi) {
+                lines.ganZhi.forEach { line -> add { Line(line, scale, GlanceTheme.colors.onSurfaceVariant) } }
             }
-            if (full) {
-                Line(
-                    "${lunar.yearGanZhi}年（${Almanac.zodiacOf(lunar.yearGanZhi)}）${Almanac.dayGanZhi(today)}日",
-                    13.sp, GlanceTheme.colors.onSurfaceVariant,
-                )
-                Line(
-                    "${Almanac.chong(today)} ${Almanac.sha(today)}",
-                    13.sp, GlanceTheme.colors.onSurfaceVariant,
-                )
+        }
+        if (layout.scroll) {
+            // Each item carries the click, since the list itself does not take one.
+            LazyColumn(modifier = background, horizontalAlignment = horizontal) {
+                items(items.size) { index ->
+                    Box(modifier = GlanceModifier.clickable(actionStartActivity<MainActivity>())) { items[index]() }
+                }
+            }
+        } else {
+            Column(
+                modifier = background.clickable(actionStartActivity<MainActivity>()),
+                horizontalAlignment = horizontal,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                items.forEach { it() }
             }
         }
     }
@@ -217,22 +267,27 @@ class TungShingWidget : GlanceAppWidget() {
     }
 
     @Composable
-    private fun Line(text: String, size: TextUnit, color: ColorProvider, bold: Boolean = false) {
+    private fun Line(line: WidgetLine, scale: Float, color: ColorProvider, maxLines: Int = 1) {
         Text(
-            text = text,
-            maxLines = 1,
+            text = line.text,
+            maxLines = maxLines,
             style = TextStyle(
-                fontSize = size,
-                fontWeight = if (bold) FontWeight.Medium else FontWeight.Normal,
+                fontSize = (line.sizeSp * scale).sp,
+                fontWeight = if (line.bold) FontWeight.Medium else FontWeight.Normal,
                 color = color,
             ),
         )
     }
 
     companion object {
-        /** Room the full layout needs inside margin and padding (a 160dp widget at the default 12dp padding). */
-        private val FULL_CONTENT = DpSize(136.dp, 136.dp)
         private val REFRESHED_AT = longPreferencesKey("refreshed_at")
+
+        /**
+         * Epoch day to render instead of today. Only the in-app preview sets it (in the state
+         * it passes to `compose`), so the widget can be checked on a festival day at any time
+         * of year; placed widgets never carry it.
+         */
+        val PREVIEW_DATE = longPreferencesKey("preview_date")
 
         /** Re-renders every placed widget so it picks up the current date. */
         suspend fun refreshAll(context: Context) {

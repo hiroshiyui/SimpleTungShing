@@ -217,7 +217,7 @@ fun AlmanacScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                WidgetSettingsSection(settings, onSettingsChange)
+                WidgetSettingsSection(settings, date, onSettingsChange)
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Column(
