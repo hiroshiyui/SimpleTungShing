@@ -17,7 +17,8 @@
     <string name="cancel">取消</string>
     <string name="app_header">民國%1$d年%2$s</string>
     <string name="app_header_pattern">（y）M月</string>
-    <string name="widget_header_pattern">y年M月 EEEE</string>
+    <!-- Word joiners (\u2060) keep the date in one piece, so the line can only wrap at the space after the weekday. -->
+    <string name="widget_header_pattern">EEEE y\u2060年\u2060M\u2060月</string>
     <string name="widget_lunar_date">農曆%1$s</string>
     <string name="widget_out_of_range">超出資料範圍</string>
     <string name="data_run_out_title">日曆資料已用完</string>

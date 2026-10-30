@@ -7,7 +7,7 @@ import org.junit.Test
 
 /** [WidgetFit] against the sizes the reviewer of F-Droid MR 54384 saw clip, and the extremes. */
 class WidgetFitTest {
-    private val header = WidgetLine("2026年10月 星期三", WidgetFit.HEADER_SP)
+    private val header = WidgetLine("星期三 2026年10月", WidgetFit.HEADER_SP)
     private val lunar = WidgetLine("農曆九月(大)十九", WidgetFit.LUNAR_SP, bold = true)
     private val observance = WidgetLine("觀音出家日", WidgetFit.OBSERVANCE_SP, bold = true)
     private val ganZhi = listOf(

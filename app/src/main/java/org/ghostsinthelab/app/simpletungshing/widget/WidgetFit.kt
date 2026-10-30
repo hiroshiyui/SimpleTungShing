@@ -7,9 +7,9 @@ import kotlin.math.min
  * and its text, whose width is estimated from the characters.
  */
 data class WidgetLine(val text: String, val sizeSp: Float, val bold: Boolean = false) {
-    /** Estimated width in dp at scale 1 and font scale 1: an em for Han script, about half for Latin. */
+    /** Estimated width in dp at scale 1 and font scale 1: an em for Han script, about half for Latin, nothing for a word joiner. */
     val widthDp: Float
-        get() = text.sumOf { c -> if (c.code >= 0x2E80) 1.0 else 0.55 }.toFloat() * sizeSp
+        get() = text.sumOf { c -> if (c == '\u2060') 0.0 else if (c.code >= 0x2E80) 1.0 else 0.55 }.toFloat() * sizeSp
 }
 
 /**
