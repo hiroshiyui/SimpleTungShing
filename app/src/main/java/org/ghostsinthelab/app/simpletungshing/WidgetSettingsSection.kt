@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +32,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -104,16 +108,20 @@ fun WidgetSettingsSection(settings: WidgetSettings, date: LocalDate, onChange: (
                 onSelect = { onChange(settings.copy(alignment = it)) },
             )
 
+            // The whole row is the switch, so TalkBack names it by its label.
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = settings.showMoon,
+                        role = Role.Switch,
+                        onValueChange = { onChange(settings.copy(showMoon = it)) },
+                    ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Label(stringResource(R.string.settings_show_moon))
-                Switch(
-                    checked = settings.showMoon,
-                    onCheckedChange = { onChange(settings.copy(showMoon = it)) },
-                )
+                Switch(checked = settings.showMoon, onCheckedChange = null)
             }
 
             Label(stringResource(R.string.settings_moon_method))
@@ -183,10 +191,13 @@ private fun SettingSlider(
 ) {
     var dragging by remember { mutableStateOf<Float?>(null) }
     val shown = dragging ?: value
+    val text = label(shown)
     Column {
-        Note(label(shown))
+        Note(text)
         Slider(
             value = shown,
+            // The visible label is a separate node, so name the slider with it too.
+            modifier = Modifier.semantics { contentDescription = text },
             onValueChange = { dragging = it },
             onValueChangeFinished = {
                 dragging?.let(onCommit)

@@ -21,7 +21,7 @@ enum class ContentAlignment { START, CENTER, END }
 /** Appearance shared by every placed widget; edited in the app. */
 data class WidgetSettings(
     val style: BackgroundStyle = BackgroundStyle.SOLID,
-    /** Background opacity, 0 (fully transparent) to 1. Text is unaffected. */
+    /** Opacity of the glass background within [OPACITY_RANGE]; the floor keeps text legible over any wallpaper. Ignored by the other styles. */
     val opacity: Float = 0.5f,
     val showMoon: Boolean = true,
     val moonMethod: MoonMethod = MoonMethod.LUNAR_DAY,
@@ -35,6 +35,8 @@ data class WidgetSettings(
         private val Context.store by preferencesDataStore("widget_settings")
 
         private val STYLE = stringPreferencesKey("style")
+        /** 20 % is the least background that still keeps the text readable on a busy wallpaper. */
+        val OPACITY_RANGE = 0.2f..1f
         private val OPACITY = floatPreferencesKey("opacity")
         private val SHOW_MOON = booleanPreferencesKey("show_moon")
         private val MOON_METHOD = stringPreferencesKey("moon_method")
@@ -67,7 +69,7 @@ data class WidgetSettings(
             val defaults = WidgetSettings()
             return WidgetSettings(
                 style = enumOrNull<BackgroundStyle>(this[STYLE]) ?: defaults.style,
-                opacity = this[OPACITY]?.coerceIn(0f, 1f) ?: defaults.opacity,
+                opacity = this[OPACITY]?.coerceIn(OPACITY_RANGE) ?: defaults.opacity,
                 showMoon = this[SHOW_MOON] ?: defaults.showMoon,
                 moonMethod = enumOrNull<MoonMethod>(this[MOON_METHOD]) ?: defaults.moonMethod,
                 marginDp = this[MARGIN]?.coerceIn(MARGIN_RANGE) ?: defaults.marginDp,

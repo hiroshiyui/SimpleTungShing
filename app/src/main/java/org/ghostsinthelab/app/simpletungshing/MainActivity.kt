@@ -46,6 +46,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -263,24 +266,31 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
         ) {
             val rocYear = lunar?.rocYear ?: (date.year - 1911)
             val locale = LocalConfiguration.current.locales[0]
-            Text(
-                stringResource(
-                    R.string.app_header,
-                    rocYear,
-                    date.format(DateTimeFormatter.ofPattern(stringResource(R.string.app_header_pattern), locale)),
-                ),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                date.dayOfMonth.toString(),
-                fontSize = 96.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                date.dayOfWeek.getDisplayName(TextStyle.FULL, locale),
-                style = MaterialTheme.typography.titleMedium,
-            )
+            // One spoken item for the three header lines, announced when stepping changes the date.
+            Column(
+                modifier = Modifier.semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    stringResource(
+                        R.string.app_header,
+                        rocYear,
+                        date.format(DateTimeFormatter.ofPattern(stringResource(R.string.app_header_pattern), locale)),
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    date.dayOfMonth.toString(),
+                    fontSize = 96.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    date.dayOfWeek.getDisplayName(TextStyle.FULL, locale),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
             Spacer(Modifier.height(12.dp))
             if (lunar == null) {
                 Text(
@@ -345,7 +355,7 @@ private fun RowDivider() {
 /** A label with a value that may wrap or span several lines, aligned to the end. */
 @Composable
 private fun WrappingRow(label: String, value: String) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    Row(modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {}, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
             value,
@@ -359,7 +369,7 @@ private fun WrappingRow(label: String, value: String) {
 
 @Composable
 private fun FestivalRow(names: List<String>) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+    Row(modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {}, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             stringResource(R.string.label_festivals),
             style = MaterialTheme.typography.bodyLarge,
@@ -381,7 +391,7 @@ private fun MoonRow(phase: MoonPhase) {
     val sizePx = with(LocalDensity.current) { 20.dp.roundToPx() }
     val icon = remember(phase, sizePx) { moonBitmap(phase, sizePx).asImageBitmap() }
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -404,8 +414,9 @@ private fun MoonRow(phase: MoonPhase) {
 
 @Composable
 private fun DetailRow(label: String, value: String) {
+    // Label and value are read as one item (merged), not two swipes.
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)

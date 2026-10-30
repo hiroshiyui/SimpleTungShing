@@ -2,12 +2,12 @@ package org.ghostsinthelab.app.simpletungshing
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -38,8 +39,11 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 
-/** One day of the month grid; [label] is null outside the dataset range. */
-private class MonthCell(val date: LocalDate, val label: String?, val highlighted: Boolean)
+/**
+ * One day of the month grid; [label] is null outside the dataset range. [spoken] is the
+ * label as a screen reader should say it (農曆 prefixed to a lunar day or month).
+ */
+private class MonthCell(val date: LocalDate, val label: String?, val spoken: String?, val highlighted: Boolean)
 
 /**
  * The month of [selected] as a Sunday-first grid, each day with its 節氣, or else its
@@ -56,10 +60,10 @@ fun MonthCard(selected: LocalDate, calendar: CalendarData, onSelect: (LocalDate)
             val lunar = calendar.lookup(date)
             val term = lunar?.let { SolarTerms.termOn(date) }
             when {
-                lunar == null -> MonthCell(date, null, false)
-                term != null -> MonthCell(date, term, true)
-                lunar.day == 1 -> MonthCell(date, Almanac.monthName(lunar.month, lunar.isLeapMonth), true)
-                else -> MonthCell(date, Almanac.dayName(lunar.day), false)
+                lunar == null -> MonthCell(date, null, null, false)
+                term != null -> MonthCell(date, term, term, true)
+                lunar.day == 1 -> Almanac.monthName(lunar.month, lunar.isLeapMonth).let { MonthCell(date, it, "農曆$it", true) }
+                else -> Almanac.dayName(lunar.day).let { MonthCell(date, it, "農曆$it", false) }
             }
         }
     }
@@ -100,7 +104,8 @@ fun MonthCard(selected: LocalDate, calendar: CalendarData, onSelect: (LocalDate)
                 Row {
                     for (i in 0..6) {
                         val cell = week.getOrNull(i)
-                        val cellModifier = Modifier.weight(1f).height(52.dp).padding(2.dp)
+                        // A minimum rather than a fixed height, so large fonts grow the row instead of clipping.
+                        val cellModifier = Modifier.weight(1f).heightIn(min = 52.dp).padding(2.dp)
                         if (cell == null) {
                             Column(cellModifier) {}
                         } else {
@@ -129,12 +134,21 @@ private fun DayCell(cell: MonthCell, isSelected: Boolean, isToday: Boolean, modi
     val colors = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(8.dp)
     val inRange = cell.label != null
+    val locale = LocalConfiguration.current.locales[0]
+    // One announcement per cell: the date, its lunar day or 節氣, and "today" when it is.
+    val description = listOfNotNull(
+        cell.date.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_cell_pattern), locale)),
+        cell.spoken,
+        stringResource(R.string.today).takeIf { isToday },
+    ).joinToString(", ")
     Column(
         modifier = modifier
             .clip(shape)
             .background(if (isSelected) colors.primary else Color.Transparent)
             .border(1.dp, if (isToday && !isSelected) colors.primary else Color.Transparent, shape)
-            .clickable(enabled = inRange, onClick = onClick)
+            // The description goes outside selectable so both land in one accessibility node.
+            .semantics { contentDescription = description }
+            .selectable(selected = isSelected, enabled = inRange, role = Role.Button, onClick = onClick)
             .alpha(if (inRange) 1f else 0.38f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

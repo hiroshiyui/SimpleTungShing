@@ -6,6 +6,7 @@
     <string name="tab_widget">小工具</string>
     <string name="tab_settings">設定</string>
     <string name="month_title_pattern">y年M月</string>
+    <string name="day_cell_pattern">M月d日 EEEE</string>
     <string name="previous_month">上個月</string>
     <string name="next_month">下個月</string>
     <string name="previous_day">前一日</string>
