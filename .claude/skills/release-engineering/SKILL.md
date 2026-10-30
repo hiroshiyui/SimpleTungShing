@@ -33,7 +33,7 @@ The established release workflow follows this pattern:
    ./gradlew clean :app:assembleRelease
    unzip -p app/build/outputs/apk/release/simpletungshing_v<version>-release-unsigned.apk classes.dex | sha256sum
    ```
-   The signed build the user then runs (Android Studio's wizard or the command line) reuses those compiled classes, so its dex must hash the same. After the user confirms, check `unzip -p <signed apk> classes.dex | sha256sum` against the noted hash; if it differs, clean and sign again.
+   The signed build the user then runs (Android Studio's wizard or the command line) reuses those compiled classes, so its dex must hash the same. The APK also embeds the git revision it was built from in `META-INF/version-control-info.textproto`, and F-Droid diffs that file too, so HEAD must be the tagged commit while the user builds: commit nothing else between the release commit and the signed build (or `git checkout --detach <tag>` first and return to `main` afterwards), and check the embedded revision with `unzip -p <signed apk> META-INF/version-control-info.textproto`. After the user confirms, check `unzip -p <signed apk> classes.dex | sha256sum` against the noted hash; if it differs, clean and sign again.
 8. **GPG-sign** the APKs (see GPG Signing below), then **push** the commit and tag and create the GitHub Release when the user confirms.
 
 ### Git Conventions
