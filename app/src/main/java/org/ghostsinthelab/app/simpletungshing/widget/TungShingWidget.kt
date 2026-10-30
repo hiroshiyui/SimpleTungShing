@@ -177,7 +177,8 @@ class TungShingWidget : GlanceAppWidget() {
             .fillMaxSize()
             .background(
                 ImageProvider(backgroundOf(settings.style)),
-                alpha = settings.opacity,
+                // Only the glass style is translucent; solid and gradient are always opaque.
+                alpha = if (settings.style == BackgroundStyle.GLASS) settings.opacity else 1f,
                 contentScale = ContentScale.FillBounds,
             )
             .cornerRadius(16.dp)

@@ -74,15 +74,18 @@ fun WidgetSettingsSection(settings: WidgetSettings, date: LocalDate, onChange: (
                 selected = settings.style,
                 onSelect = { onChange(settings.copy(style = it)) },
             )
-            if (settings.style == BackgroundStyle.GLASS) Note(stringResource(R.string.style_glass_note))
-
-            SettingSlider(
-                value = settings.opacity,
-                range = 0f..1f,
-                steps = 19,
-                label = { stringResource(R.string.settings_opacity, (it * 100).roundToInt()) },
-                onCommit = { onChange(settings.copy(opacity = it)) },
-            )
+            // Opacity belongs to the glass style only; the solid and gradient backgrounds are
+            // always opaque, so the slider is hidden for them rather than shown with no effect.
+            if (settings.style == BackgroundStyle.GLASS) {
+                Note(stringResource(R.string.style_glass_note))
+                SettingSlider(
+                    value = settings.opacity,
+                    range = WidgetSettings.OPACITY_RANGE,
+                    steps = 15,
+                    label = { stringResource(R.string.settings_opacity, (it * 100).roundToInt()) },
+                    onCommit = { onChange(settings.copy(opacity = it)) },
+                )
+            }
 
             Label(stringResource(R.string.settings_layout))
             DpSlider(
