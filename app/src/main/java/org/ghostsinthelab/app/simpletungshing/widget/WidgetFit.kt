@@ -18,10 +18,11 @@ data class WidgetLine(val text: String, val sizeSp: Float, val bold: Boolean = f
  *
  * Glance cannot measure text before it lays out, and a launcher may give the widget
  * nearly any size, so the fit is estimated. [scale] shrinks every font size and the
- * moon down to [MIN_SCALE]; below that, lines are dropped from the bottom (沖煞 and 干支
- * first, with the day number stepping down to [COMPACT_NUMBER_SP], then the festival line). When even the date lines alone cannot fit at
- * [MIN_SCALE], for a tiny widget, [scroll] is set and the widget shows every line in a
- * scrollable list at the floor size rather than clipping.
+ * moon a little, down to [MIN_SCALE]; below that, lines are dropped from the bottom (沖煞
+ * and 干支 first, with the day number stepping down to [COMPACT_NUMBER_SP], then the
+ * festival line). When even the date lines alone cannot fit, for a tiny widget or a
+ * large system font, [scroll] is set and the widget shows every line in a list the user
+ * scrolls, at the floor size, rather than clipping or shrinking the text further.
  */
 data class WidgetLayout(
     val scale: Float,
@@ -46,11 +47,11 @@ object WidgetFit {
     const val MOON_DP = 32f
 
     /**
-     * Smallest shrink of the *effective* font size (scale × system font scale) before lines
-     * are dropped, keeping the 13 sp lines around 9 sp. A large system font may thus be
-     * scaled below 0.7 as long as the text stays at least as big as at 0.7 on a normal font.
+     * Smallest shrink before lines are dropped. It applies to the scale alone, never to the
+     * system font scale: a user who enlarged their font did so to read, and the widget
+     * must not quietly undo that. Lines are dropped, wrapped or scrolled instead.
      */
-    const val MIN_SCALE = 0.7f
+    const val MIN_SCALE = 0.85f
 
     /**
      * Height of a text line relative to its font size, measured on a device: Han script in
@@ -103,12 +104,12 @@ object WidgetFit {
                         (if (wrap) OBSERVANCE_SP * LINE_HEIGHT else 0f)
                     )
                 val scale = min(1f, min(heightDp / height, widthDp / (widest * fontScale)))
-                if (scale * fontScale >= MIN_SCALE) {
+                if (scale >= MIN_SCALE) {
                     return WidgetLayout(scale, numberSp, tier.observance, tier.ganZhi, scroll = false, observanceWraps = wrap)
                 }
             }
         }
-        return WidgetLayout(MIN_SCALE / fontScale, COMPACT_NUMBER_SP, observance != null, true, scroll = true, observanceWraps = true)
+        return WidgetLayout(MIN_SCALE, COMPACT_NUMBER_SP, observance != null, true, scroll = true, observanceWraps = true)
     }
 
     private data class Tier(val observance: Boolean, val ganZhi: Boolean)

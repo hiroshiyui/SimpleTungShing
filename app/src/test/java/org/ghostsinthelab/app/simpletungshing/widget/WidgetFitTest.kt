@@ -38,7 +38,7 @@ class WidgetFitTest {
     /** A short 2×2 cell: the 干支 lines go before the festival does. */
     @Test
     fun shortWidgetDropsGanZhiFirst() {
-        val layout = fit(156f, 100f)
+        val layout = fit(156f, 108f)
         assertFalse(layout.scroll)
         assertFalse(layout.showGanZhi)
         assertTrue(layout.showObservance)
@@ -47,7 +47,7 @@ class WidgetFitTest {
     /** Smaller still: only the date lines with the compact day number, still readable. */
     @Test
     fun tinyWidgetKeepsDateLines() {
-        val layout = fit(120f, 75f)
+        val layout = fit(120f, 85f)
         assertFalse(layout.scroll)
         assertFalse(layout.showGanZhi)
         assertFalse(layout.showObservance)
@@ -73,12 +73,20 @@ class WidgetFitTest {
         assertTrue(large.scale < normal.scale || !large.showGanZhi)
     }
 
-    /** At font scale 2.0 the preview size still fits the date lines without scrolling: the floor is on the effective size. */
+    /** At font scale 2.0 a 2×2 widget scrolls at the user's size rather than shrinking the text to fit. */
     @Test
-    fun hugeFontScaleShrinksInsteadOfScrolling() {
+    fun hugeFontScaleScrollsAtFullSize() {
         val layout = fit(156f, 156f, fontScale = 2f)
-        assertFalse(layout.scroll)
-        assertTrue(layout.scale * 2f >= WidgetFit.MIN_SCALE)
+        assertTrue(layout.scroll)
+        assertTrue(layout.scale >= WidgetFit.MIN_SCALE)
+    }
+
+    /** The floor is on the scale alone, so no size ever shrinks the text below 85 % of the user's font. */
+    @Test
+    fun neverShrinksBelowFloor() {
+        for (fontScale in listOf(1f, 1.3f, 1.5f, 2f)) for (h in listOf(60f, 100f, 140f, 200f)) {
+            assertTrue(fit(156f, h, fontScale).scale >= WidgetFit.MIN_SCALE)
+        }
     }
 
     /** A long festival line wraps onto two lines before the width forces a shrink below the floor. */

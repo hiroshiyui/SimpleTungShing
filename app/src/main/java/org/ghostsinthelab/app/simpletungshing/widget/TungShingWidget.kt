@@ -207,8 +207,11 @@ class TungShingWidget : GlanceAppWidget() {
             return
         }
         val scale = layout.scale
+        // In the scrolling list height is unlimited, so lines wrap instead of ellipsizing:
+        // a wide line (large font, narrow widget) is read in full by scrolling, not cut.
+        val wrap = if (layout.scroll) Int.MAX_VALUE else 1
         val items: List<@Composable () -> Unit> = buildList {
-            add { Line(lines.header, scale, GlanceTheme.colors.onSurfaceVariant) }
+            add { Line(lines.header, scale, GlanceTheme.colors.onSurfaceVariant, wrap) }
             add {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -225,12 +228,12 @@ class TungShingWidget : GlanceAppWidget() {
                     }
                 }
             }
-            add { Line(lines.lunar, scale, GlanceTheme.colors.onSurface) }
+            add { Line(lines.lunar, scale, GlanceTheme.colors.onSurface, wrap) }
             if (layout.showObservance && lines.observance != null) {
-                add { Line(lines.observance, scale, GlanceTheme.colors.primary, maxLines = if (layout.observanceWraps) 2 else 1) }
+                add { Line(lines.observance, scale, GlanceTheme.colors.primary, maxOf(wrap, if (layout.observanceWraps) 2 else 1)) }
             }
             if (layout.showGanZhi) {
-                lines.ganZhi.forEach { line -> add { Line(line, scale, GlanceTheme.colors.onSurfaceVariant) } }
+                lines.ganZhi.forEach { line -> add { Line(line, scale, GlanceTheme.colors.onSurfaceVariant, wrap) } }
             }
         }
         if (layout.scroll) {
