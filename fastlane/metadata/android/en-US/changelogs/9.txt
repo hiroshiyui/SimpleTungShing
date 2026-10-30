@@ -1,0 +1,6 @@
+Hi! This release is about fitting on your home screen and reading comfortably:
+
+* My widget now fits its text to its size: on festival and 節氣 days the last line is no longer cut off. When room is short I drop 沖煞 first, then the festival; if even the date cannot fit, you scroll instead.
+* I never shrink text below your system font size, and I re-render after you change it.
+* Opacity now applies only to the glass background.
+* Better TalkBack descriptions in the month grid and widget settings.
