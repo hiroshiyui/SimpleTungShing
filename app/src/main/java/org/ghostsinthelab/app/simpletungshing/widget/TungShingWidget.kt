@@ -173,6 +173,13 @@ class TungShingWidget : GlanceAppWidget() {
             ContentAlignment.CENTER -> Alignment.CenterHorizontally
             ContentAlignment.END -> Alignment.End
         }
+        // A wrapped text box spans the full width, so the text inside needs the same
+        // alignment as the box, or its lines sit at the start.
+        val textAlign = when (settings.alignment) {
+            ContentAlignment.START -> TextAlign.Start
+            ContentAlignment.CENTER -> TextAlign.Center
+            ContentAlignment.END -> TextAlign.End
+        }
         val background = GlanceModifier
             .fillMaxSize()
             .background(
@@ -196,11 +203,7 @@ class TungShingWidget : GlanceAppWidget() {
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = GlanceTheme.colors.onSurface,
-                        textAlign = when (settings.alignment) {
-                            ContentAlignment.START -> TextAlign.Start
-                            ContentAlignment.CENTER -> TextAlign.Center
-                            ContentAlignment.END -> TextAlign.End
-                        },
+                        textAlign = textAlign,
                     ),
                 )
             }
@@ -211,7 +214,7 @@ class TungShingWidget : GlanceAppWidget() {
         // a wide line (large font, narrow widget) is read in full by scrolling, not cut.
         val wrap = if (layout.scroll) Int.MAX_VALUE else 1
         val items: List<@Composable () -> Unit> = buildList {
-            add { Line(lines.header, scale, GlanceTheme.colors.onSurfaceVariant, wrap) }
+            add { Line(lines.header, scale, GlanceTheme.colors.onSurfaceVariant, textAlign, wrap) }
             add {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -228,12 +231,12 @@ class TungShingWidget : GlanceAppWidget() {
                     }
                 }
             }
-            add { Line(lines.lunar, scale, GlanceTheme.colors.onSurface, wrap) }
+            add { Line(lines.lunar, scale, GlanceTheme.colors.onSurface, textAlign, wrap) }
             if (layout.showObservance && lines.observance != null) {
-                add { Line(lines.observance, scale, GlanceTheme.colors.primary, maxOf(wrap, if (layout.observanceWraps) 2 else 1)) }
+                add { Line(lines.observance, scale, GlanceTheme.colors.primary, textAlign, maxOf(wrap, if (layout.observanceWraps) 2 else 1)) }
             }
             if (layout.showGanZhi) {
-                lines.ganZhi.forEach { line -> add { Line(line, scale, GlanceTheme.colors.onSurfaceVariant, wrap) } }
+                lines.ganZhi.forEach { line -> add { Line(line, scale, GlanceTheme.colors.onSurfaceVariant, textAlign, wrap) } }
             }
         }
         if (layout.scroll) {
@@ -271,7 +274,7 @@ class TungShingWidget : GlanceAppWidget() {
     }
 
     @Composable
-    private fun Line(line: WidgetLine, scale: Float, color: ColorProvider, maxLines: Int = 1) {
+    private fun Line(line: WidgetLine, scale: Float, color: ColorProvider, textAlign: TextAlign, maxLines: Int = 1) {
         Text(
             text = line.text,
             maxLines = maxLines,
@@ -279,6 +282,7 @@ class TungShingWidget : GlanceAppWidget() {
                 fontSize = (line.sizeSp * scale).sp,
                 fontWeight = if (line.bold) FontWeight.Medium else FontWeight.Normal,
                 color = color,
+                textAlign = textAlign,
             ),
         )
     }
