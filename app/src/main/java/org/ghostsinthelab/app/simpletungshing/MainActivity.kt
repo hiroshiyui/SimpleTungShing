@@ -77,7 +77,6 @@ import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import org.ghostsinthelab.app.simpletungshing.ui.theme.SimpleTungShingTheme
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidget
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
-import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
 import org.ghostsinthelab.app.simpletungshing.widget.moonBitmap
 import java.time.Instant
@@ -505,7 +504,7 @@ private fun AlmanacScreenPreview() {
             calendar = calendar,
             settings = WidgetSettings(),
             onSettingsChange = {},
-            appSettings = AppSettings(worshipGroups = WorshipGroup.entries.toSet()),
+            appSettings = AppSettings(),
             onAppSettingsChange = {},
         )
     }
