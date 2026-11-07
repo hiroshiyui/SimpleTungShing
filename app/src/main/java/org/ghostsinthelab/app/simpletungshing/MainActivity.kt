@@ -107,6 +107,8 @@ class MainActivity : ComponentActivity() {
                     }
                     val settings by remember { WidgetSettings.flow(applicationContext) }
                         .collectAsState(null)
+                    val appSettings by remember { AppSettings.flow(applicationContext) }
+                        .collectAsState(AppSettings())
                     val scope = rememberCoroutineScope()
                     val currentCalendar = calendar
                     val currentSettings = settings
@@ -117,6 +119,8 @@ class MainActivity : ComponentActivity() {
                             calendar = currentCalendar,
                             settings = currentSettings,
                             onSettingsChange = { scope.launch { WidgetSettings.save(applicationContext, it) } },
+                            appSettings = appSettings,
+                            onAppSettingsChange = { scope.launch { AppSettings.save(applicationContext, it) } },
                             modifier = Modifier.padding(innerPadding),
                         )
                     }
@@ -156,6 +160,8 @@ fun AlmanacScreen(
     calendar: CalendarData,
     settings: WidgetSettings,
     onSettingsChange: (WidgetSettings) -> Unit,
+    appSettings: AppSettings,
+    onAppSettingsChange: (AppSettings) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var epochDay by rememberSaveable { mutableLongStateOf(LocalDate.now().toEpochDay()) }
@@ -187,7 +193,13 @@ fun AlmanacScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                MonthCard(date, calendar, onSelect = { epochDay = it.toEpochDay() })
+                MonthCard(
+                    selected = date,
+                    calendar = calendar,
+                    markSacrificeDays = appSettings.markSacrificeDays,
+                    onMarkSacrificeDaysChange = { onAppSettingsChange(appSettings.copy(markSacrificeDays = it)) },
+                    onSelect = { epochDay = it.toEpochDay() },
+                )
                 DayCard(date, calendar, settings)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -490,6 +502,8 @@ private fun AlmanacScreenPreview() {
             calendar = calendar,
             settings = WidgetSettings(),
             onSettingsChange = {},
+            appSettings = AppSettings(markSacrificeDays = true),
+            onAppSettingsChange = {},
         )
     }
 }

@@ -3,16 +3,21 @@ package org.ghostsinthelab.app.simpletungshing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -30,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.ghostsinthelab.app.simpletungshing.data.SacrificeDays
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
 import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
@@ -43,14 +49,29 @@ import java.time.format.TextStyle
  * One day of the month grid; [label] is null outside the dataset range. [spoken] is the
  * label as a screen reader should say it (農曆 prefixed to a lunar day or month).
  */
-private class MonthCell(val date: LocalDate, val label: String?, val spoken: String?, val highlighted: Boolean)
+private class MonthCell(
+    val date: LocalDate,
+    val label: String?,
+    val spoken: String?,
+    val highlighted: Boolean,
+    /** A customary offering day per [SacrificeDays]; drawn as a strap when the user enables it. */
+    val sacrifice: Boolean,
+)
 
 /**
  * The month of [selected] as a Sunday-first grid, each day with its 節氣, or else its
  * lunar day (the month name on 初一). Tapping a day or stepping months calls [onSelect].
+ * With [markSacrificeDays] the offering days of [SacrificeDays] carry a strap along their
+ * bottom edge; the switch under the grid calls [onMarkSacrificeDaysChange].
  */
 @Composable
-fun MonthCard(selected: LocalDate, calendar: CalendarData, onSelect: (LocalDate) -> Unit) {
+fun MonthCard(
+    selected: LocalDate,
+    calendar: CalendarData,
+    markSacrificeDays: Boolean,
+    onMarkSacrificeDaysChange: (Boolean) -> Unit,
+    onSelect: (LocalDate) -> Unit,
+) {
     val month = YearMonth.from(selected)
     val today = LocalDate.now()
     val locale = LocalConfiguration.current.locales[0]
@@ -59,11 +80,12 @@ fun MonthCard(selected: LocalDate, calendar: CalendarData, onSelect: (LocalDate)
             val date = month.atDay(day)
             val lunar = calendar.lookup(date)
             val term = lunar?.let { SolarTerms.termOn(date) }
+            val sacrifice = lunar?.let { SacrificeDays.isSacrificeDay(it) } ?: false
             when {
-                lunar == null -> MonthCell(date, null, null, false)
-                term != null -> MonthCell(date, term, term, true)
-                lunar.day == 1 -> Almanac.monthName(lunar.month, lunar.isLeapMonth).let { MonthCell(date, it, "農曆$it", true) }
-                else -> Almanac.dayName(lunar.day).let { MonthCell(date, it, "農曆$it", false) }
+                lunar == null -> MonthCell(date, null, null, false, false)
+                term != null -> MonthCell(date, term, term, true, sacrifice)
+                lunar.day == 1 -> Almanac.monthName(lunar.month, lunar.isLeapMonth).let { MonthCell(date, it, "農曆$it", true, sacrifice) }
+                else -> Almanac.dayName(lunar.day).let { MonthCell(date, it, "農曆$it", false, sacrifice) }
             }
         }
     }
@@ -109,12 +131,32 @@ fun MonthCard(selected: LocalDate, calendar: CalendarData, onSelect: (LocalDate)
                         if (cell == null) {
                             Column(cellModifier) {}
                         } else {
-                            DayCell(cell, cell.date == selected, cell.date == today, cellModifier) {
+                            DayCell(cell, cell.date == selected, cell.date == today, markSacrificeDays, cellModifier) {
                                 onSelect(cell.date)
                             }
                         }
                     }
                 }
+            }
+            // The whole row is the switch, so TalkBack names it by its label.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .toggleable(
+                        value = markSacrificeDays,
+                        role = Role.Switch,
+                        onValueChange = onMarkSacrificeDaysChange,
+                    ),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    stringResource(R.string.mark_sacrifice_days),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Switch(checked = markSacrificeDays, onCheckedChange = null)
             }
         }
     }
@@ -130,18 +172,27 @@ private fun MonthStep(symbol: String, description: String, enabled: Boolean, onC
 }
 
 @Composable
-private fun DayCell(cell: MonthCell, isSelected: Boolean, isToday: Boolean, modifier: Modifier, onClick: () -> Unit) {
+private fun DayCell(
+    cell: MonthCell,
+    isSelected: Boolean,
+    isToday: Boolean,
+    markSacrificeDays: Boolean,
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(8.dp)
     val inRange = cell.label != null
+    val strap = markSacrificeDays && cell.sacrifice
     val locale = LocalConfiguration.current.locales[0]
-    // One announcement per cell: the date, its lunar day or 節氣, and "today" when it is.
+    // One announcement per cell: the date, its lunar day or 節氣, "worship day" when marked, and "today" when it is.
     val description = listOfNotNull(
         cell.date.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_cell_pattern), locale)),
         cell.spoken,
+        stringResource(R.string.sacrifice_day).takeIf { strap },
         stringResource(R.string.today).takeIf { isToday },
     ).joinToString(", ")
-    Column(
+    Box(
         modifier = modifier
             .clip(shape)
             .background(if (isSelected) colors.primary else Color.Transparent)
@@ -150,27 +201,42 @@ private fun DayCell(cell: MonthCell, isSelected: Boolean, isToday: Boolean, modi
             .semantics { contentDescription = description }
             .selectable(selected = isSelected, enabled = inRange, role = Role.Button, onClick = onClick)
             .alpha(if (inRange) 1f else 0.38f),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
     ) {
-        Text(
-            cell.date.dayOfMonth.toString(),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) colors.onPrimary else colors.onSurface,
-        )
-        cell.label?.let {
-            Text(
-                it,
-                style = MaterialTheme.typography.labelSmall,
-                color = when {
-                    isSelected -> colors.onPrimary
-                    cell.highlighted -> colors.primary
-                    else -> colors.onSurfaceVariant
-                },
-                maxLines = 1,
-                softWrap = false,
+        if (strap) {
+            // The strap: a band along the bottom edge in the tertiary colour, which stands apart
+            // from the primary used for selection and today, in both light and dark themes.
+            Box(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(5.dp)
+                    .background(if (isSelected) colors.onPrimary else colors.tertiary),
             )
+        }
+        Column(
+            modifier = Modifier.fillMaxSize().padding(bottom = if (strap) 5.dp else 0.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                cell.date.dayOfMonth.toString(),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+                color = if (isSelected) colors.onPrimary else colors.onSurface,
+            )
+            cell.label?.let {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = when {
+                        isSelected -> colors.onPrimary
+                        cell.highlighted -> colors.primary
+                        else -> colors.onSurfaceVariant
+                    },
+                    maxLines = 1,
+                    softWrap = false,
+                )
+            }
         }
     }
 }
