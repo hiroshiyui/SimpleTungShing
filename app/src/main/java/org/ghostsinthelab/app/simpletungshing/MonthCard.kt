@@ -10,9 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.IconButton
@@ -54,15 +55,15 @@ private class MonthCell(
     val label: String?,
     val spoken: String?,
     val highlighted: Boolean,
-    /** A customary offering day per [SacrificeDays]; drawn as a strap when the user enables it. */
+    /** A customary offering day per [SacrificeDays]; marked with a dot when the user enables it. */
     val sacrifice: Boolean,
 )
 
 /**
  * The month of [selected] as a Sunday-first grid, each day with its 節氣, or else its
  * lunar day (the month name on 初一). Tapping a day or stepping months calls [onSelect].
- * With [markSacrificeDays] the offering days of [SacrificeDays] carry a strap along their
- * bottom edge; the switch under the grid calls [onMarkSacrificeDaysChange].
+ * With [markSacrificeDays] the offering days of [SacrificeDays] carry a dot under their
+ * label; the switch under the grid calls [onMarkSacrificeDaysChange].
  */
 @Composable
 fun MonthCard(
@@ -183,13 +184,13 @@ private fun DayCell(
     val colors = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(8.dp)
     val inRange = cell.label != null
-    val strap = markSacrificeDays && cell.sacrifice
+    val dot = markSacrificeDays && cell.sacrifice
     val locale = LocalConfiguration.current.locales[0]
     // One announcement per cell: the date, its lunar day or 節氣, "worship day" when marked, and "today" when it is.
     val description = listOfNotNull(
         cell.date.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_cell_pattern), locale)),
         cell.spoken,
-        stringResource(R.string.sacrifice_day).takeIf { strap },
+        stringResource(R.string.sacrifice_day).takeIf { dot },
         stringResource(R.string.today).takeIf { isToday },
     ).joinToString(", ")
     Box(
@@ -202,19 +203,19 @@ private fun DayCell(
             .selectable(selected = isSelected, enabled = inRange, role = Role.Button, onClick = onClick)
             .alpha(if (inRange) 1f else 0.38f),
     ) {
-        if (strap) {
-            // The strap: a band along the bottom edge in the tertiary colour, which stands apart
+        if (dot) {
+            // The dot sits under the lunar label, in the tertiary colour, which stands apart
             // from the primary used for selection and today, in both light and dark themes.
             Box(
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(5.dp)
-                    .background(if (isSelected) colors.onPrimary else colors.tertiary),
+                    .padding(bottom = 3.dp)
+                    .size(6.dp)
+                    .background(if (isSelected) colors.onPrimary else colors.tertiary, CircleShape),
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(bottom = if (strap) 5.dp else 0.dp),
+            modifier = Modifier.fillMaxSize().padding(bottom = if (dot) 9.dp else 0.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {

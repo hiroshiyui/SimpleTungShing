@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 
 /** Preferences of the app screen itself (not the widget); kept apart from WidgetSettings so saving them does not re-render widgets. */
 data class AppSettings(
-    /** Decorate 初一、十五、初二、十六、端午、中秋、重陽 in the month grid with a strap. */
+    /** Decorate 初一、十五、初二、十六、端午、中秋、重陽 in the month grid with a dot. */
     val markSacrificeDays: Boolean = false,
 ) {
     companion object {
