@@ -1,0 +1,5 @@
+Hi! This release marks the days you make offerings on:
+
+* The month calendar now puts a dot under the customary worship days, in four groups you can switch on or off on the Settings tab: 初一／十五, 初二／十六 (做牙), the festivals from 除夕 to 送神, and the birthdays of the deities most Taiwanese temples celebrate. All are on by default.
+* TalkBack names the group of each marked day, and can jump between cards by heading.
+* The Settings tab is now available on every Android version.
