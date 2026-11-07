@@ -54,8 +54,8 @@ private class MonthCell(
     val label: String?,
     val spoken: String?,
     val highlighted: Boolean,
-    /** A customary offering day in one of the enabled [WorshipGroup]s; marked with a dot. */
-    val worship: Boolean,
+    /** The enabled [WorshipGroup]s this day belongs to; a dot marks it when non-empty. */
+    val worship: Set<WorshipGroup>,
 )
 
 /**
@@ -78,9 +78,9 @@ fun MonthCard(
             val date = month.atDay(day)
             val lunar = calendar.lookup(date)
             val term = lunar?.let { SolarTerms.termOn(date) }
-            val worship = lunar?.let { WorshipDays.isWorshipDay(it, worshipGroups) } ?: false
+            val worship = lunar?.let { WorshipDays.enabledGroupsOf(it, worshipGroups) }.orEmpty()
             when {
-                lunar == null -> MonthCell(date, null, null, false, false)
+                lunar == null -> MonthCell(date, null, null, false, emptySet())
                 term != null -> MonthCell(date, term, term, true, worship)
                 lunar.day == 1 -> Almanac.monthName(lunar.month, lunar.isLeapMonth).let { MonthCell(date, it, "農曆$it", true, worship) }
                 else -> Almanac.dayName(lunar.day).let { MonthCell(date, it, "農曆$it", false, worship) }
@@ -160,13 +160,14 @@ private fun DayCell(
     val colors = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(8.dp)
     val inRange = cell.label != null
-    val dot = cell.worship
+    val dot = cell.worship.isNotEmpty()
     val locale = LocalConfiguration.current.locales[0]
-    // One announcement per cell: the date, its lunar day or 節氣, "worship day" when marked, and "today" when it is.
+    val worshipLabels = cell.worship.map { stringResource(it.spokenLabel) }
+    // One announcement per cell: the date, its lunar day or 節氣, "worship day (group)" when marked, and "today" when it is.
     val description = listOfNotNull(
         cell.date.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_cell_pattern), locale)),
         cell.spoken,
-        stringResource(R.string.worship_day).takeIf { dot },
+        if (dot) stringResource(R.string.worship_day, worshipLabels.joinToString("、")) else null,
         stringResource(R.string.today).takeIf { isToday },
     ).joinToString(", ")
     Box(

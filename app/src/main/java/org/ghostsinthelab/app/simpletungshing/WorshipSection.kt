@@ -13,15 +13,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup
 
+/** Short group name spoken in a day cell's description, e.g. 祭拜日（做牙）. */
+val WorshipGroup.spokenLabel: Int
+    get() = when (this) {
+        WorshipGroup.FIRST_AND_FIFTEENTH -> R.string.worship_spoken_first_fifteenth
+        WorshipGroup.SECOND_AND_SIXTEENTH -> R.string.worship_spoken_second_sixteenth
+        WorshipGroup.FESTIVALS -> R.string.worship_spoken_festivals
+        WorshipGroup.DEITY_BIRTHDAYS -> R.string.worship_spoken_deity_birthdays
+    }
+
 /**
  * Settings card choosing which [WorshipGroup]s the month grid marks with a dot. Each
- * group is a whole-row checkbox so a screen reader names it by its label.
+ * group is a whole-row checkbox so a screen reader names it by its label; the box sits
+ * beside the first line, since the longer labels wrap to many lines at large font sizes.
  */
 @Composable
 fun WorshipSection(selected: Set<WorshipGroup>, onChange: (Set<WorshipGroup>) -> Unit) {
@@ -36,6 +47,9 @@ fun WorshipSection(selected: Set<WorshipGroup>, onChange: (Set<WorshipGroup>) ->
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            // The box (24 dp, as it has no click handler of its own) is padded down until its centre meets the
+            // centre of the label's first line, which is 12 sp down (bodyLarge has a 24 sp line).
+            val boxOffset = (12 * LocalDensity.current.fontScale - 12).dp.coerceAtLeast(0.dp)
             for (group in WorshipGroup.entries) {
                 val checked = group in selected
                 Row(
@@ -48,9 +62,9 @@ fun WorshipSection(selected: Set<WorshipGroup>, onChange: (Set<WorshipGroup>) ->
                             onValueChange = { onChange(if (it) selected + group else selected - group) },
                         ),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.Top,
                 ) {
-                    Checkbox(checked = checked, onCheckedChange = null)
+                    Checkbox(checked = checked, onCheckedChange = null, modifier = Modifier.padding(top = boxOffset))
                     Text(stringResource(group.label), style = MaterialTheme.typography.bodyLarge)
                 }
             }

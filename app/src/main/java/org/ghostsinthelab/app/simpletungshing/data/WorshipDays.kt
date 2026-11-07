@@ -77,7 +77,11 @@ object WorshipDays {
         if (isDeityBirthday(lunar)) add(WorshipGroup.DEITY_BIRTHDAYS)
     }
 
+    /** The groups of [enabled] that [lunar] belongs to; empty when it is not a marked day. */
+    fun enabledGroupsOf(lunar: LunarDay, enabled: Set<WorshipGroup>): Set<WorshipGroup> =
+        if (enabled.isEmpty()) emptySet() else groupsOf(lunar).filterTo(mutableSetOf()) { it in enabled }
+
     /** Whether [lunar] is an offering day in any of [enabled]. */
     fun isWorshipDay(lunar: LunarDay, enabled: Set<WorshipGroup>): Boolean =
-        enabled.isNotEmpty() && groupsOf(lunar).any { it in enabled }
+        enabledGroupsOf(lunar, enabled).isNotEmpty()
 }

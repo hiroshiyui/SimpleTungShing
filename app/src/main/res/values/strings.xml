@@ -19,7 +19,11 @@
     <string name="worship_group_second_sixteenth">初二、十六 (做牙)</string>
     <string name="worship_group_festivals">Festivals (除夕、天公生、元宵、清明、端午、七夕、中元、中秋、重陽、冬至、送神)</string>
     <string name="worship_group_deity_birthdays">Deity birthdays (清水祖師、土地公、文昌帝君、觀音、玄天上帝、保生大帝、註生娘娘、媽祖、釋迦佛祖、神農大帝、關聖帝君、瑤池金母、地藏王、灶君、中壇元帥)</string>
-    <string name="worship_day">worship day</string>
+    <string name="worship_day">worship day (%1$s)</string>
+    <string name="worship_spoken_first_fifteenth">1st or 15th</string>
+    <string name="worship_spoken_second_sixteenth">做牙</string>
+    <string name="worship_spoken_festivals">festival</string>
+    <string name="worship_spoken_deity_birthdays">deity birthday</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="app_header">%2$s (ROC year %1$d)</string>
