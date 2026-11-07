@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -193,9 +194,8 @@ private fun DayCell(
     ).joinToString(", ")
     Box(
         modifier = modifier
-            // The selection background is shaped rather than the cell clipped, so the strap below
-            // keeps its square corners.
-            .background(if (isSelected) colors.primary else Color.Transparent, shape)
+            .clip(shape)
+            .background(if (isSelected) colors.primary else Color.Transparent)
             .border(1.dp, if (isToday && !isSelected) colors.primary else Color.Transparent, shape)
             // The description goes outside selectable so both land in one accessibility node.
             .semantics { contentDescription = description }
