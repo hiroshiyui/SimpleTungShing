@@ -17,7 +17,7 @@
     <string name="settings_worship_days_note">Mark these days with a dot in the month calendar. Shops and businesses usually keep 初二 and 十六 (做牙) as well.</string>
     <string name="worship_group_first_fifteenth">初一、十五</string>
     <string name="worship_group_second_sixteenth">初二、十六 (做牙)</string>
-    <string name="worship_group_festivals">端午、中秋、重陽</string>
+    <string name="worship_group_festivals">Festivals (除夕、天公生、元宵、清明、端午、七夕、中元、中秋、重陽、冬至、送神)</string>
     <string name="worship_day">worship day</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

@@ -17,7 +17,7 @@
     <string name="settings_worship_days_note">在月曆中以圓點標示這些日子。做生意的店家通常也會在初二、十六做牙。</string>
     <string name="worship_group_first_fifteenth">初一、十五</string>
     <string name="worship_group_second_sixteenth">初二、十六（做牙）</string>
-    <string name="worship_group_festivals">端午、中秋、重陽</string>
+    <string name="worship_group_festivals">節日（除夕、天公生、元宵、清明、端午、七夕、中元、中秋、重陽、冬至、送神）</string>
     <string name="worship_day">祭拜日</string>
     <string name="ok">確定</string>
     <string name="cancel">取消</string>
