@@ -15,8 +15,7 @@ data class AppSettings(
 ) {
     companion object {
         private val Context.store by preferencesDataStore("app_settings")
-        // The stored name predates the rename to "worship"; keep it so saved choices survive.
-        private val WORSHIP_GROUPS = stringSetPreferencesKey("sacrifice_groups")
+        private val WORSHIP_GROUPS = stringSetPreferencesKey("worship_groups")
 
         /** Current settings and every later change; unknown stored group names are ignored. */
         fun flow(context: Context): Flow<AppSettings> = context.applicationContext.store.data.map { prefs ->
