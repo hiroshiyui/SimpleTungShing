@@ -13,7 +13,11 @@
     <string name="today">Today</string>
     <string name="next_day">Next</string>
     <string name="pick_date">Pick a date</string>
-    <string name="mark_sacrifice_days">Mark worship days (初一、十五、初二、十六、端午、中秋、重陽)</string>
+    <string name="settings_sacrifice_days">Worship days</string>
+    <string name="settings_sacrifice_days_note">Mark these days with a dot in the month calendar. Shops and businesses usually keep 初二 and 十六 (做牙) as well.</string>
+    <string name="sacrifice_group_first_fifteenth">初一、十五</string>
+    <string name="sacrifice_group_second_sixteenth">初二、十六 (做牙)</string>
+    <string name="sacrifice_group_festivals">端午、中秋、重陽</string>
     <string name="sacrifice_day">worship day</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

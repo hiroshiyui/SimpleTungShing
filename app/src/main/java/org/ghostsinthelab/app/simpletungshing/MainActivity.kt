@@ -76,6 +76,7 @@ import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import org.ghostsinthelab.app.simpletungshing.ui.theme.SimpleTungShingTheme
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidget
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
+import org.ghostsinthelab.app.simpletungshing.data.SacrificeGroup
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
 import org.ghostsinthelab.app.simpletungshing.widget.moonBitmap
 import java.time.Instant
@@ -166,12 +167,7 @@ fun AlmanacScreen(
 ) {
     var epochDay by rememberSaveable { mutableLongStateOf(LocalDate.now().toEpochDay()) }
     var picking by rememberSaveable { mutableStateOf(false) }
-    // Settings holds only the language picker, which needs Android 13+.
-    val tabs = listOfNotNull(
-        R.string.tab_almanac,
-        R.string.tab_widget,
-        R.string.tab_settings.takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU },
-    )
+    val tabs = listOf(R.string.tab_almanac, R.string.tab_widget, R.string.tab_settings)
     var tab by rememberSaveable { mutableIntStateOf(0) }
     // Hoisted so that each tab keeps its scroll position across switches.
     val almanacScroll = rememberScrollState()
@@ -196,8 +192,7 @@ fun AlmanacScreen(
                 MonthCard(
                     selected = date,
                     calendar = calendar,
-                    markSacrificeDays = appSettings.markSacrificeDays,
-                    onMarkSacrificeDaysChange = { onAppSettingsChange(appSettings.copy(markSacrificeDays = it)) },
+                    sacrificeGroups = appSettings.sacrificeGroups,
                     onSelect = { epochDay = it.toEpochDay() },
                 )
                 DayCard(date, calendar, settings)
@@ -234,7 +229,7 @@ fun AlmanacScreen(
             ) {
                 WidgetSettingsSection(settings, date, onSettingsChange)
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -242,7 +237,9 @@ fun AlmanacScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                LanguageSection()
+                SacrificeSection(appSettings.sacrificeGroups) { onAppSettingsChange(appSettings.copy(sacrificeGroups = it)) }
+                // The language picker needs the platform LocaleManager of Android 13+.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) LanguageSection()
             }
         }
     }
@@ -502,7 +499,7 @@ private fun AlmanacScreenPreview() {
             calendar = calendar,
             settings = WidgetSettings(),
             onSettingsChange = {},
-            appSettings = AppSettings(markSacrificeDays = true),
+            appSettings = AppSettings(sacrificeGroups = SacrificeGroup.entries.toSet()),
             onAppSettingsChange = {},
         )
     }

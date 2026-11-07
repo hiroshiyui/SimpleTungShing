@@ -3,7 +3,6 @@ package org.ghostsinthelab.app.simpletungshing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -37,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.ghostsinthelab.app.simpletungshing.data.SacrificeDays
+import org.ghostsinthelab.app.simpletungshing.data.SacrificeGroup
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
 import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
@@ -55,33 +54,31 @@ private class MonthCell(
     val label: String?,
     val spoken: String?,
     val highlighted: Boolean,
-    /** A customary offering day per [SacrificeDays]; marked with a dot when the user enables it. */
+    /** A customary offering day in one of the enabled [SacrificeGroup]s; marked with a dot. */
     val sacrifice: Boolean,
 )
 
 /**
  * The month of [selected] as a Sunday-first grid, each day with its 節氣, or else its
  * lunar day (the month name on 初一). Tapping a day or stepping months calls [onSelect].
- * With [markSacrificeDays] the offering days of [SacrificeDays] carry a dot under their
- * label; the switch under the grid calls [onMarkSacrificeDaysChange].
+ * Offering days in [sacrificeGroups] (see [SacrificeDays]) carry a dot under their label.
  */
 @Composable
 fun MonthCard(
     selected: LocalDate,
     calendar: CalendarData,
-    markSacrificeDays: Boolean,
-    onMarkSacrificeDaysChange: (Boolean) -> Unit,
+    sacrificeGroups: Set<SacrificeGroup>,
     onSelect: (LocalDate) -> Unit,
 ) {
     val month = YearMonth.from(selected)
     val today = LocalDate.now()
     val locale = LocalConfiguration.current.locales[0]
-    val cells = remember(month, calendar) {
+    val cells = remember(month, calendar, sacrificeGroups) {
         (1..month.lengthOfMonth()).map { day ->
             val date = month.atDay(day)
             val lunar = calendar.lookup(date)
             val term = lunar?.let { SolarTerms.termOn(date) }
-            val sacrifice = lunar?.let { SacrificeDays.isSacrificeDay(it) } ?: false
+            val sacrifice = lunar?.let { SacrificeDays.isSacrificeDay(it, sacrificeGroups) } ?: false
             when {
                 lunar == null -> MonthCell(date, null, null, false, false)
                 term != null -> MonthCell(date, term, term, true, sacrifice)
@@ -132,32 +129,12 @@ fun MonthCard(
                         if (cell == null) {
                             Column(cellModifier) {}
                         } else {
-                            DayCell(cell, cell.date == selected, cell.date == today, markSacrificeDays, cellModifier) {
+                            DayCell(cell, cell.date == selected, cell.date == today, cellModifier) {
                                 onSelect(cell.date)
                             }
                         }
                     }
                 }
-            }
-            // The whole row is the switch, so TalkBack names it by its label.
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 48.dp)
-                    .toggleable(
-                        value = markSacrificeDays,
-                        role = Role.Switch,
-                        onValueChange = onMarkSacrificeDaysChange,
-                    ),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    stringResource(R.string.mark_sacrifice_days),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Switch(checked = markSacrificeDays, onCheckedChange = null)
             }
         }
     }
@@ -177,14 +154,13 @@ private fun DayCell(
     cell: MonthCell,
     isSelected: Boolean,
     isToday: Boolean,
-    markSacrificeDays: Boolean,
     modifier: Modifier,
     onClick: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(8.dp)
     val inRange = cell.label != null
-    val dot = markSacrificeDays && cell.sacrifice
+    val dot = cell.sacrifice
     val locale = LocalConfiguration.current.locales[0]
     // One announcement per cell: the date, its lunar day or 節氣, "worship day" when marked, and "today" when it is.
     val description = listOfNotNull(
