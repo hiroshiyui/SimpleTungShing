@@ -76,7 +76,7 @@ import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
 import org.ghostsinthelab.app.simpletungshing.ui.theme.SimpleTungShingTheme
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidget
 import org.ghostsinthelab.app.simpletungshing.widget.TungShingWidgetReceiver
-import org.ghostsinthelab.app.simpletungshing.data.SacrificeGroup
+import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup
 import org.ghostsinthelab.app.simpletungshing.widget.WidgetSettings
 import org.ghostsinthelab.app.simpletungshing.widget.moonBitmap
 import java.time.Instant
@@ -192,7 +192,7 @@ fun AlmanacScreen(
                 MonthCard(
                     selected = date,
                     calendar = calendar,
-                    sacrificeGroups = appSettings.sacrificeGroups,
+                    worshipGroups = appSettings.worshipGroups,
                     onSelect = { epochDay = it.toEpochDay() },
                 )
                 DayCard(date, calendar, settings)
@@ -237,7 +237,7 @@ fun AlmanacScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                SacrificeSection(appSettings.sacrificeGroups) { onAppSettingsChange(appSettings.copy(sacrificeGroups = it)) }
+                WorshipSection(appSettings.worshipGroups) { onAppSettingsChange(appSettings.copy(worshipGroups = it)) }
                 // The language picker needs the platform LocaleManager of Android 13+.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) LanguageSection()
             }
@@ -499,7 +499,7 @@ private fun AlmanacScreenPreview() {
             calendar = calendar,
             settings = WidgetSettings(),
             onSettingsChange = {},
-            appSettings = AppSettings(sacrificeGroups = SacrificeGroup.entries.toSet()),
+            appSettings = AppSettings(worshipGroups = WorshipGroup.entries.toSet()),
             onAppSettingsChange = {},
         )
     }

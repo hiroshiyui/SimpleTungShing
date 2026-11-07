@@ -17,26 +17,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import org.ghostsinthelab.app.simpletungshing.data.SacrificeGroup
+import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup
 
 /**
- * Settings card choosing which [SacrificeGroup]s the month grid marks with a dot. Each
+ * Settings card choosing which [WorshipGroup]s the month grid marks with a dot. Each
  * group is a whole-row checkbox so a screen reader names it by its label.
  */
 @Composable
-fun SacrificeSection(selected: Set<SacrificeGroup>, onChange: (Set<SacrificeGroup>) -> Unit) {
+fun WorshipSection(selected: Set<WorshipGroup>, onChange: (Set<WorshipGroup>) -> Unit) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(stringResource(R.string.settings_sacrifice_days), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.settings_worship_days), style = MaterialTheme.typography.titleMedium)
             Text(
-                stringResource(R.string.settings_sacrifice_days_note),
+                stringResource(R.string.settings_worship_days_note),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            for (group in SacrificeGroup.entries) {
+            for (group in WorshipGroup.entries) {
                 val checked = group in selected
                 Row(
                     modifier = Modifier
@@ -58,9 +58,9 @@ fun SacrificeSection(selected: Set<SacrificeGroup>, onChange: (Set<SacrificeGrou
     }
 }
 
-private val SacrificeGroup.label: Int
+private val WorshipGroup.label: Int
     get() = when (this) {
-        SacrificeGroup.FIRST_AND_FIFTEENTH -> R.string.sacrifice_group_first_fifteenth
-        SacrificeGroup.SECOND_AND_SIXTEENTH -> R.string.sacrifice_group_second_sixteenth
-        SacrificeGroup.FESTIVALS -> R.string.sacrifice_group_festivals
+        WorshipGroup.FIRST_AND_FIFTEENTH -> R.string.worship_group_first_fifteenth
+        WorshipGroup.SECOND_AND_SIXTEENTH -> R.string.worship_group_second_sixteenth
+        WorshipGroup.FESTIVALS -> R.string.worship_group_festivals
     }

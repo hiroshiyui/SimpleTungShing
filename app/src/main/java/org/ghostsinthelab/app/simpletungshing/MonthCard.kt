@@ -34,8 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.ghostsinthelab.app.simpletungshing.data.SacrificeDays
-import org.ghostsinthelab.app.simpletungshing.data.SacrificeGroup
+import org.ghostsinthelab.app.simpletungshing.data.WorshipDays
+import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
 import org.ghostsinthelab.app.simpletungshing.data.CalendarData
 import org.ghostsinthelab.app.simpletungshing.data.SolarTerms
@@ -54,36 +54,36 @@ private class MonthCell(
     val label: String?,
     val spoken: String?,
     val highlighted: Boolean,
-    /** A customary offering day in one of the enabled [SacrificeGroup]s; marked with a dot. */
-    val sacrifice: Boolean,
+    /** A customary offering day in one of the enabled [WorshipGroup]s; marked with a dot. */
+    val worship: Boolean,
 )
 
 /**
  * The month of [selected] as a Sunday-first grid, each day with its 節氣, or else its
  * lunar day (the month name on 初一). Tapping a day or stepping months calls [onSelect].
- * Offering days in [sacrificeGroups] (see [SacrificeDays]) carry a dot under their label.
+ * Offering days in [worshipGroups] (see [WorshipDays]) carry a dot under their label.
  */
 @Composable
 fun MonthCard(
     selected: LocalDate,
     calendar: CalendarData,
-    sacrificeGroups: Set<SacrificeGroup>,
+    worshipGroups: Set<WorshipGroup>,
     onSelect: (LocalDate) -> Unit,
 ) {
     val month = YearMonth.from(selected)
     val today = LocalDate.now()
     val locale = LocalConfiguration.current.locales[0]
-    val cells = remember(month, calendar, sacrificeGroups) {
+    val cells = remember(month, calendar, worshipGroups) {
         (1..month.lengthOfMonth()).map { day ->
             val date = month.atDay(day)
             val lunar = calendar.lookup(date)
             val term = lunar?.let { SolarTerms.termOn(date) }
-            val sacrifice = lunar?.let { SacrificeDays.isSacrificeDay(it, sacrificeGroups) } ?: false
+            val worship = lunar?.let { WorshipDays.isWorshipDay(it, worshipGroups) } ?: false
             when {
                 lunar == null -> MonthCell(date, null, null, false, false)
-                term != null -> MonthCell(date, term, term, true, sacrifice)
-                lunar.day == 1 -> Almanac.monthName(lunar.month, lunar.isLeapMonth).let { MonthCell(date, it, "農曆$it", true, sacrifice) }
-                else -> Almanac.dayName(lunar.day).let { MonthCell(date, it, "農曆$it", false, sacrifice) }
+                term != null -> MonthCell(date, term, term, true, worship)
+                lunar.day == 1 -> Almanac.monthName(lunar.month, lunar.isLeapMonth).let { MonthCell(date, it, "農曆$it", true, worship) }
+                else -> Almanac.dayName(lunar.day).let { MonthCell(date, it, "農曆$it", false, worship) }
             }
         }
     }
@@ -160,13 +160,13 @@ private fun DayCell(
     val colors = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(8.dp)
     val inRange = cell.label != null
-    val dot = cell.sacrifice
+    val dot = cell.worship
     val locale = LocalConfiguration.current.locales[0]
     // One announcement per cell: the date, its lunar day or 節氣, "worship day" when marked, and "today" when it is.
     val description = listOfNotNull(
         cell.date.format(DateTimeFormatter.ofPattern(stringResource(R.string.day_cell_pattern), locale)),
         cell.spoken,
-        stringResource(R.string.sacrifice_day).takeIf { dot },
+        stringResource(R.string.worship_day).takeIf { dot },
         stringResource(R.string.today).takeIf { isToday },
     ).joinToString(", ")
     Box(
