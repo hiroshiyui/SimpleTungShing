@@ -63,4 +63,5 @@ private val WorshipGroup.label: Int
         WorshipGroup.FIRST_AND_FIFTEENTH -> R.string.worship_group_first_fifteenth
         WorshipGroup.SECOND_AND_SIXTEENTH -> R.string.worship_group_second_sixteenth
         WorshipGroup.FESTIVALS -> R.string.worship_group_festivals
+        WorshipGroup.DEITY_BIRTHDAYS -> R.string.worship_group_deity_birthdays
     }

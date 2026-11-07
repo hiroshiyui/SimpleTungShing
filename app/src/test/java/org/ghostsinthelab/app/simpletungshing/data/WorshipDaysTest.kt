@@ -1,5 +1,6 @@
 package org.ghostsinthelab.app.simpletungshing.data
 
+import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup.DEITY_BIRTHDAYS
 import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup.FESTIVALS
 import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup.FIRST_AND_FIFTEENTH
 import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup.SECOND_AND_SIXTEENTH
@@ -22,6 +23,7 @@ class WorshipDaysTest {
     fun monthlyDays() {
         assertEquals(setOf(FIRST_AND_FIFTEENTH), groups(2025, 1, 29))   // 乙巳年正月初一
         assertEquals(setOf(SECOND_AND_SIXTEENTH), groups(2025, 1, 30))  // 初二
+        assertEquals(setOf(SECOND_AND_SIXTEENTH, DEITY_BIRTHDAYS), groups(2025, 3, 1)) // 二月初二 土地公
         assertEquals(setOf(FIRST_AND_FIFTEENTH), groups(2025, 3, 14))   // 二月十五
         assertEquals(setOf(SECOND_AND_SIXTEENTH), groups(2025, 2, 13))  // 十六
         assertEquals(emptySet<WorshipGroup>(), groups(2025, 2, 14))   // 十七
@@ -39,7 +41,7 @@ class WorshipDaysTest {
     fun festivals() {
         assertEquals(setOf(FESTIVALS), groups(2025, 5, 31))                       // 端午
         assertEquals(setOf(FIRST_AND_FIFTEENTH, FESTIVALS), groups(2025, 10, 6))  // 中秋, also 十五
-        assertEquals(setOf(FESTIVALS), groups(2025, 10, 29))                      // 重陽
+        assertEquals(setOf(FESTIVALS, DEITY_BIRTHDAYS), groups(2025, 10, 29))     // 重陽, 中壇元帥
         assertEquals(setOf(FESTIVALS), groups(2025, 2, 6))                        // 天公生 正月初九
         assertEquals(setOf(FIRST_AND_FIFTEENTH, FESTIVALS), groups(2025, 2, 12))  // 元宵
         assertEquals(setOf(FESTIVALS), groups(2025, 4, 4))                        // 清明
@@ -50,6 +52,14 @@ class WorshipDaysTest {
         assertEquals(setOf(FESTIVALS), groups(2026, 2, 16))                       // 除夕
         assertEquals(emptySet<WorshipGroup>(), groups(2026, 2, 15))               // 十二月廿八
         assertEquals(emptySet<WorshipGroup>(), groups(2025, 10, 28))            // 九月初八
+    }
+
+    @Test
+    fun deityBirthdays() {
+        assertEquals(setOf(DEITY_BIRTHDAYS), groups(2025, 4, 20))  // 媽祖 三月廿三
+        assertEquals(setOf(DEITY_BIRTHDAYS), groups(2025, 7, 18))  // 關聖帝君 六月廿四
+        assertEquals(setOf(DEITY_BIRTHDAYS), groups(2025, 9, 21))  // 地藏王 七月三十 (七月大)
+        assertEquals(emptySet<WorshipGroup>(), groups(2025, 4, 21))
     }
 
     @Test

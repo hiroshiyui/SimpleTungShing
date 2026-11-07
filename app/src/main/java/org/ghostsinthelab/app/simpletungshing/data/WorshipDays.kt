@@ -11,6 +11,11 @@ enum class WorshipGroup {
      * 中元, 中秋, 重陽, 冬至 and 送神.
      */
     FESTIVALS,
+    /**
+     * Birthdays of the deities most temples in Taiwan celebrate (神明聖誕), on the dates
+     * customary in Taiwan (e.g. 關聖帝君 on 六月廿四). Individual temples may differ.
+     */
+    DEITY_BIRTHDAYS,
 }
 
 /**
@@ -31,6 +36,29 @@ object WorshipDays {
         12 to 24, // 送神
     )
 
+    /** Lunar (month, day) deity birthdays; 地藏王 (the last day of the 7th month) is matched separately. */
+    private val DEITY_BIRTHDAYS = setOf(
+        1 to 6,   // 清水祖師
+        2 to 2,   // 土地公
+        2 to 3,   // 文昌帝君
+        2 to 19,  // 觀音佛祖
+        3 to 3,   // 玄天上帝
+        3 to 15,  // 保生大帝
+        3 to 20,  // 註生娘娘
+        3 to 23,  // 媽祖
+        4 to 8,   // 釋迦佛祖
+        4 to 26,  // 神農大帝
+        6 to 19,  // 觀音得道
+        6 to 24,  // 關聖帝君
+        7 to 18,  // 瑤池金母
+        8 to 3,   // 灶君
+        9 to 9,   // 中壇元帥
+        9 to 19,  // 觀音出家
+    )
+
+    private fun isDeityBirthday(lunar: LunarDay): Boolean = !lunar.isLeapMonth &&
+        ((lunar.month to lunar.day) in DEITY_BIRTHDAYS || (lunar.month == 7 && lunar.day == lunar.monthLength))
+
     private fun isFestival(lunar: LunarDay): Boolean {
         if (lunar.isLeapMonth) return false
         if ((lunar.month to lunar.day) in FESTIVALS) return true
@@ -46,6 +74,7 @@ object WorshipDays {
         if (lunar.day == 1 || lunar.day == 15) add(WorshipGroup.FIRST_AND_FIFTEENTH)
         if (lunar.day == 2 || lunar.day == 16) add(WorshipGroup.SECOND_AND_SIXTEENTH)
         if (isFestival(lunar)) add(WorshipGroup.FESTIVALS)
+        if (isDeityBirthday(lunar)) add(WorshipGroup.DEITY_BIRTHDAYS)
     }
 
     /** Whether [lunar] is an offering day in any of [enabled]. */
