@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.heading
 import org.ghostsinthelab.app.simpletungshing.data.WorshipDays
 import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup
 import org.ghostsinthelab.app.simpletungshing.data.Almanac
@@ -101,7 +102,7 @@ fun MonthCard(
                 }
                 Text(
                     month.format(DateTimeFormatter.ofPattern(stringResource(R.string.month_title_pattern), locale)),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).semantics { heading() },
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )

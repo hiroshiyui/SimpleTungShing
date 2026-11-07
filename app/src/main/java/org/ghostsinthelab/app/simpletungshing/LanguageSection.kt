@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 
 /** Language tags offered in the app; an empty tag follows the system language. */
 private val LANGUAGES = listOf("" to R.string.language_system, "en-US" to R.string.language_english, "zh-TW" to R.string.language_zh_tw)
@@ -44,7 +46,11 @@ fun LanguageSection() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(stringResource(R.string.settings_language), style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.settings_language),
+                modifier = Modifier.semantics { heading() },
+                style = MaterialTheme.typography.titleMedium,
+            )
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 LANGUAGES.forEachIndexed { index, (tag, label) ->
                     SegmentedButton(

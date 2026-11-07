@@ -64,6 +64,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.heading
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -141,7 +142,11 @@ fun DataRunOutScreen(calendar: CalendarData, modifier: Modifier = Modifier) {
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
     ) {
-        Text(stringResource(R.string.data_run_out_title), style = MaterialTheme.typography.headlineSmall)
+        Text(
+            stringResource(R.string.data_run_out_title),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.headlineSmall,
+        )
         Text(
             stringResource(R.string.data_run_out_message, calendar.lastDate),
             style = MaterialTheme.typography.bodyLarge,
@@ -287,6 +292,7 @@ private fun DayCard(date: LocalDate, calendar: CalendarData, settings: WidgetSet
                         rocYear,
                         date.format(DateTimeFormatter.ofPattern(stringResource(R.string.app_header_pattern), locale)),
                     ),
+                    modifier = Modifier.semantics { heading() },
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(

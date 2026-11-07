@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.heading
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import org.ghostsinthelab.app.simpletungshing.data.MoonMethod
@@ -59,7 +60,11 @@ fun WidgetSettingsSection(settings: WidgetSettings, date: LocalDate, onChange: (
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.settings_title),
+                modifier = Modifier.semantics { heading() },
+                style = MaterialTheme.typography.titleMedium,
+            )
             WidgetPreview(settings, date)
             Note(stringResource(R.string.preview_date_note))
             AddWidgetButton()

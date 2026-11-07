@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import org.ghostsinthelab.app.simpletungshing.data.WorshipGroup
 
 /** Short group name spoken in a day cell's description, e.g. 祭拜日（做牙）. */
@@ -41,7 +43,11 @@ fun WorshipSection(selected: Set<WorshipGroup>, onChange: (Set<WorshipGroup>) ->
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(stringResource(R.string.settings_worship_days), style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.settings_worship_days),
+                modifier = Modifier.semantics { heading() },
+                style = MaterialTheme.typography.titleMedium,
+            )
             Text(
                 stringResource(R.string.settings_worship_days_note),
                 style = MaterialTheme.typography.bodyMedium,
