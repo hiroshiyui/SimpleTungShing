@@ -14,15 +14,24 @@ The widget in its solid, gradient and glass styles, on 重陽節:
 
 <p align="center"><img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/3.png" alt="Widget in solid, gradient and glass styles" width="720"></p>
 
-The app in 台灣漢語 and English: the Almanac tab with its month calendar, and the Widget tab with a live preview of the widget.
+The app in 台灣漢語 and English: the Almanac tab with its month calendar (worship days dotted), and the Widget tab with a live preview of the widget.
 
-程式的台灣漢語與英文介面：附月曆的「農民曆」分頁，以及可即時預覽小工具的「小工具」分頁。
+程式的台灣漢語與英文介面：附月曆的「農民曆」分頁（祭拜日以圓點標示），以及可即時預覽小工具的「小工具」分頁。
 
 <p align="center">
   <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/1.png" alt="Almanac tab with month calendar in 台灣漢語" width="200">
   <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/2.png" alt="Widget tab with preview and settings in 台灣漢語" width="200">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Almanac tab with month calendar in English" width="200">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Widget tab with preview and settings in English" width="200">
+</p>
+
+The Settings tab, where you choose which groups of worship days to mark and the app language:
+
+「設定」分頁：選擇要標示哪些祭拜日分組，以及程式語言：
+
+<p align="center">
+  <img src="fastlane/metadata/android/zh-TW/images/phoneScreenshots/5.png" alt="Settings tab with worship-day groups and language in 台灣漢語" width="200">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" alt="Settings tab with worship-day groups and language in English" width="200">
 </p>
 
 ## Download 下載
